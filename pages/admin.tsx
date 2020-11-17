@@ -1,0 +1,73 @@
+import React from "react";
+import CheckboxInput from "../components/checkbox-input";
+import Column from "../components/column";
+import Nav from "../components/nav";
+import SearchInput from "../components/search-input";
+import TextInput from "../components/text-input";
+
+const Admin = () => {
+  return (
+    <>
+      <Nav />
+      <div className="container mx-auto my-6">
+        <h1 className="text-5xl font-semibold">Admin Dashboard</h1>
+        <div></div>
+        <div className="flex flex-row mt-6">
+          <Column
+            title="Manage names"
+            action={
+              <button className="bg-primary px-4 py-2 text-white">
+                <svg
+                  className="h-6 w-6 float-left mr-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>{" "}
+                IMPORT CSV
+              </button>
+            }
+          >
+            <div className="rounded overflow-hidden shadow-lg p-6 flex flex-row items-center flex-wrap">
+              <div className="flex flex-row items-center flex-grow gap-4 flex-wrap">
+                <div className="flex flex-row gap-4 lg:w-1/6">
+                  <CheckboxInput />
+                  <p>Select All</p>
+                </div>
+                <SearchInput className="lg:w-1/4" />
+                <TextInput
+                  placeholder="Add a name"
+                  className="lg:w-1/4"
+                  rightIcon={
+                    <svg
+                      className="h-6 w-6 text-primary"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  }
+                />
+              </div>
+              <p className="text-red-500">Delete Selected</p>
+            </div>
+          </Column>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Admin;
