@@ -1,7 +1,10 @@
 import React from "react";
+import Card from "../components/card";
 import CheckboxInput from "../components/checkbox-input";
 import Column from "../components/column";
+import DropdownInput from "../components/dropdown-input";
 import Nav from "../components/nav";
+import PaginationInterface from "../components/pagination-interface";
 import SearchInput from "../components/search-input";
 import TextInput from "../components/text-input";
 
@@ -35,7 +38,7 @@ const Admin = () => {
               </button>
             }
           >
-            <div className="rounded overflow-hidden shadow-lg p-6 flex flex-row items-center flex-wrap">
+            <Card wrapperClass="flex flex-row items-center flex-wrap">
               <div className="flex flex-row items-center flex-grow gap-4 flex-wrap-reverse">
                 <div className="flex flex-row gap-4 lg:w-1/6">
                   <CheckboxInput />
@@ -62,7 +65,20 @@ const Admin = () => {
                 />
               </div>
               {/* <p className="text-red-500">Delete Selected</p> */}
-            </div>
+            </Card>
+            <Card wrapperClass="mt-4 px-0 py-0">
+              <ul>
+                <li className="py-3 px-6 hover:bg-red-100">
+                  <CheckboxInput wrapperClass="inline-block float-left mr-4" />
+                  Amin Roslan
+                </li>
+                <li className="py-3 px-6 hover:bg-red-100">
+                  <CheckboxInput wrapperClass="inline-block float-left mr-4" />
+                  Maiya Abueg
+                </li>
+              </ul>
+              <PaginationInterface />
+            </Card>
           </Column>
         </div>
       </div>
