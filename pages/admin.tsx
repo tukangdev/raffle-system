@@ -9,8 +9,8 @@ const Admin = () => {
   return (
     <>
       <Nav />
-      <div className="container mx-auto my-6">
-        <h1 className="text-5xl font-semibold">Admin Dashboard</h1>
+      <div className="container mx-auto my-6 px-4">
+        <h1 className="text-3xl sm:text-5xl font-semibold">Admin Dashboard</h1>
         <div></div>
         <div className="flex flex-row mt-6">
           <Column
@@ -36,15 +36,15 @@ const Admin = () => {
             }
           >
             <div className="rounded overflow-hidden shadow-lg p-6 flex flex-row items-center flex-wrap">
-              <div className="flex flex-row items-center flex-grow gap-4 flex-wrap">
+              <div className="flex flex-row items-center flex-grow gap-4 flex-wrap-reverse">
                 <div className="flex flex-row gap-4 lg:w-1/6">
                   <CheckboxInput />
                   <p>Select All</p>
                 </div>
-                <SearchInput className="lg:w-1/4" />
+                <SearchInput className="w-full lg:w-1/4 md:w-1/3" />
                 <TextInput
                   placeholder="Add a name"
-                  className="lg:w-1/4"
+                  className="w-full lg:w-1/4 md:w-1/3"
                   rightIcon={
                     <svg
                       className="h-6 w-6 text-primary"
@@ -61,7 +61,7 @@ const Admin = () => {
                   }
                 />
               </div>
-              <p className="text-red-500">Delete Selected</p>
+              {/* <p className="text-red-500">Delete Selected</p> */}
             </div>
           </Column>
         </div>

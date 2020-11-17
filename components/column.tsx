@@ -12,7 +12,7 @@ const Column = ({
   return (
     <div className="w-full">
       <div className="flex flex-row justify-between items-center">
-        <h2 className="text-3xl font-semibold">{title}</h2>
+        <h2 className="text-xl sm:text-3xl font-semibold">{title}</h2>
         {action}
       </div>
 
