@@ -49,17 +49,4 @@ export default async (
       res.statusMessage = err;
     }
   }
-
-  if (req.method === "DELETE") {
-    try {
-      await namesCollection.doc(id as string).delete();
-
-      res.status(200);
-      res.json({ status: 1, message: `Successfully deleted user ${id}` });
-    } catch (err) {
-      console.log(err);
-      res.status(500);
-      res.statusMessage = err;
-    }
-  }
 };

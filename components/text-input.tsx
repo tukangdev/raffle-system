@@ -1,21 +1,20 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, ReactHTMLElement } from "react";
 
-const TextInput = ({
-  className,
-  rightIcon,
-  placeholder,
-}: {
-  className?: string;
-  rightIcon?: ReactElement;
-  placeholder?: string;
-}) => (
-  <div className={`relative text-gray-600 ${className}`}>
+const TextInput = (
+  props: {
+    className?: string;
+    rightIcon?: ReactElement;
+    placeholder?: string;
+  } & React.HTMLProps<HTMLInputElement>
+) => (
+  <div className={`relative text-gray-600 ${props.className}`}>
     <input
-      placeholder={placeholder}
+      {...props}
+      placeholder={props.placeholder}
       className="border-2 border-grey-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none w-full"
     />
     <button type="submit" className="absolute right-0 top-0 mt-2 mr-2">
-      {rightIcon}
+      {props.rightIcon}
     </button>
   </div>
 );
