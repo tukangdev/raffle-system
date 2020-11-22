@@ -6,12 +6,26 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const namesRef = firebase.firestore.collection("names");
   if (req.method === "GET") {
     try {
-      const { perPage, go, firstAnchorId, lastAnchorId } = req.query;
+      const { perPage, go, firstAnchorId, lastAnchorId, q } = req.query;
 
       // all documents
-      const docs = namesRef.orderBy("name");
+      const docs = q
+        ? namesRef
+            .orderBy("name")
+            .startAt(q)
+            .endAt(q + "\uf8ff")
+        : namesRef.orderBy("name");
+
+      const docsWithLimit = q
+        ? namesRef
+            .orderBy("name")
+            .startAt(q)
+            .endAt(q + "\uf8ff")
+            .limit(parseInt(perPage as string))
+        : namesRef.orderBy("name").limit(parseInt(perPage as string));
       // snapshot of all documentd
       const snapshot = await docs.get();
+      const snapshotWithLimit = await docsWithLimit.get();
 
       const veryFirstAnchorData = snapshot.docs[0].data();
       const veryLastAnchorData = snapshot.docs[snapshot.docs.length - 1].data();
@@ -114,12 +128,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             }
           }
           default: {
-            await returnFirstQuery(namesRef, perPage, res, snapshot);
+            await returnFirstQuery(res, snapshot, snapshotWithLimit);
           }
         }
       } else {
         // Return first query on first load on clientside.
-        await returnFirstQuery(namesRef, perPage, res, snapshot);
+        await returnFirstQuery(res, snapshot, snapshotWithLimit);
       }
     } catch (err) {
       console.error(err);
@@ -179,22 +193,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 async function returnFirstQuery(
-  namesRef: FirebaseFirestore.CollectionReference<
-    FirebaseFirestore.DocumentData
-  >,
-  perPage: string | string[],
   res: NextApiResponse<any>,
-  snapshot: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>
+  snapshot: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>,
+  snapshotWithLimit: FirebaseFirestore.QuerySnapshot<
+    FirebaseFirestore.DocumentData
+  >
 ) {
-  const firstQuery = namesRef
-    .orderBy("name")
-    .limit(parseInt(perPage as string));
-  const firstQuerySnapshot = await firstQuery.get();
-
   res.status(200);
   res.json({
     total: snapshot.docs.length,
-    items: firstQuerySnapshot.docs.map((doc) => ({
+    items: snapshotWithLimit.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     })),

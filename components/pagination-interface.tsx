@@ -6,6 +6,7 @@ const PaginationInterface = (props: {
   page: number;
   handlePage: Function;
   dataCount: number;
+  isLoading: boolean;
 }) => {
   const [perPage, setPerPage] = React.useState(5);
 
@@ -42,7 +43,32 @@ const PaginationInterface = (props: {
   };
 
   return (
-    <div className="flex flex-row items-center justify-center gap-2 flex-wrap py-3 px-6 text-grey-600">
+    <div className="relative flex flex-row items-center justify-center gap-2 flex-wrap py-3 px-6 text-grey-600">
+      {props.isLoading && (
+        <div className="absolute left-0 ml-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 24 24"
+            className="h-6 w-6 animate-spin"
+          >
+            <g fill="none">
+              <path
+                opacity=".2"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14zm0 3c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10z"
+                fill="#626262"
+              />
+              <path
+                d="M2 12C2 6.477 6.477 2 12 2v3a7 7 0 0 0-7 7H2z"
+                fill="#626262"
+              />
+            </g>
+            <rect x="0" y="0" width="24" height="24" fill="rgba(0, 0, 0, 0)" />
+          </svg>
+        </div>
+      )}
       <p>Items per page</p>
       <div className={`inline-block relative w-16`}>
         <select

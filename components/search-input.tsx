@@ -1,8 +1,18 @@
 import React from "react";
 
-const SearchInput = ({ className }: { className?: string }) => (
-  <div className={`relative text-gray-600 ${className}`}>
+type SearchInputProps = {
+  wrapperClass: string;
+  search: string;
+  handleSearch: Function;
+} & React.HTMLProps<HTMLInputElement>;
+
+const SearchInput = (props: SearchInputProps) => (
+  <div className={`relative text-gray-600 ${props.wrapperClass}`}>
     <input
+      value={props.search}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        props.handleSearch(e.target.value)
+      }
       className="border-2 border-grey-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none w-full"
       type="search"
       name="search"

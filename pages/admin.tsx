@@ -11,6 +11,7 @@ import SearchInput from "../components/search-input";
 import TextInput from "../components/text-input";
 import { AlertType } from "../enum";
 import { useCreateName, useDeleteName, useNames } from "../queries";
+import debounce from "lodash.debounce";
 
 const Admin = () => {
   const [page, setPage] = React.useState(1);
@@ -20,19 +21,26 @@ const Admin = () => {
   const [alertType, setAlertType] = React.useState<AlertType>(
     AlertType.success
   );
+  const [search, setSearch] = React.useState("");
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertText, setAlertText] = React.useState("");
   const [selectList, setSelectList] = React.useState<string[]>([]);
   const [go, setGo] = React.useState<"next" | "prev" | "start" | "last">();
-  const { isError, resolvedData, status } = useNames({
+  const {
+    isError,
+    resolvedData,
+    status,
+    isFetching: isLoadingNames,
+  } = useNames({
     go,
     perPage,
     anchors,
+    search,
   });
   const [create, { isLoading: isLoadingCreate }] = useCreateName();
   const [remove, { isLoading: isLoadingRemove }] = useDeleteName();
 
-  const isLoading = isLoadingCreate || isLoadingRemove;
+  const isLoading = isLoadingCreate || isLoadingRemove || isLoadingNames;
 
   // Only runs on first load. Status dictates that
   React.useEffect(() => {
@@ -157,7 +165,11 @@ const Admin = () => {
                     ? `all`
                     : "selected"}
                 </a>
-                <SearchInput className="w-full lg:w-1/3 md:w-1/3" />
+                <SearchInput
+                  search={search}
+                  handleSearch={(v: string) => setSearch(v)}
+                  wrapperClass="w-full lg:w-1/3 md:w-1/3"
+                />
                 <TextInput
                   value={name}
                   onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) =>
@@ -204,7 +216,13 @@ const Admin = () => {
                   </a>
                 </div>
                 <div className="flex gap-4 w-full flex-wrap">
-                  <SearchInput className="w-full md:w-1/2" />
+                  <SearchInput
+                    search={search}
+                    handleSearch={(v: string) =>
+                      debounce(() => setSearch(v), 1000)
+                    }
+                    wrapperClass="w-full md:w-1/2"
+                  />
                   <TextInput
                     value={name}
                     onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) =>
@@ -306,6 +324,7 @@ const Admin = () => {
                         ].id,
                       ]);
                   }}
+                  isLoading={isLoading}
                   handlePerPage={(p: 5 | 10 | 30) => setPerPage(p)}
                   page={page}
                   handlePage={(p: number) => setPage(p)}

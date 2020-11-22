@@ -33,13 +33,14 @@ export const useNames = (pagination: {
   go?: "next" | "prev" | "start" | "last";
   perPage: 5 | 10 | 30;
   anchors?: [string, string];
+  search: string;
 }) =>
   usePaginatedQuery(
     [CACHE_KEYS.namesPaginate, pagination],
-    (_, { go, perPage = 5, anchors = [] }) =>
+    (_, { search, go, perPage = 5, anchors = [] }) =>
       fetchData<{ items: Name[]; total: number }>(
         "GET",
-        `/api/raffle/names?go=${go}&firstAnchorId=${anchors[0]}&lastAnchorId=${anchors[1]}&perPage=${perPage}`
+        `/api/raffle/names?q=${search}&go=${go}&firstAnchorId=${anchors[0]}&lastAnchorId=${anchors[1]}&perPage=${perPage}`
       ),
     {
       retry: false,
