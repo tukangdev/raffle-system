@@ -15,9 +15,34 @@ const PaginationInterface = (props: {
     setPerPage(parseInt(event.target.value));
   };
 
+  const totalPages = Math.round(props.dataCount / perPage);
+
   const move = (go: "next" | "prev" | "start" | "last") => {
     props.handleGo(go);
     setGo(go);
+
+    console.log(props.page);
+
+    switch (go) {
+      case "start": {
+        props.handlePage(1);
+        break;
+      }
+      case "next": {
+        props.handlePage(
+          props.page === totalPages ? totalPages : props.page + 1
+        );
+        break;
+      }
+      case "prev": {
+        props.handlePage(props.page === 1 ? 1 : props.page - 1);
+        break;
+      }
+      case "last": {
+        props.handlePage(totalPages);
+        break;
+      }
+    }
   };
 
   return (
@@ -27,7 +52,7 @@ const PaginationInterface = (props: {
         <select
           value={perPage}
           onChange={change}
-          className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+          className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-3 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
         >
           <option value={5}>5</option>
           <option value={10}>10</option>
@@ -44,10 +69,13 @@ const PaginationInterface = (props: {
         </div>
       </div>
       <p>
-        {props.page} - {props.dataCount / perPage} of {props.dataCount}
+        {props.page} - {totalPages} of {props.dataCount}
       </p>
       <div className="flex flex-row items-center">
-        <a onClick={() => move("start")}>
+        <a
+          onClick={() => (props.page !== 1 ? move("start") : null)}
+          className="cursor-pointer hover:text-grey-900"
+        >
           <svg
             className="h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"
@@ -61,7 +89,10 @@ const PaginationInterface = (props: {
             />
           </svg>
         </a>
-        <a onClick={() => move("prev")}>
+        <a
+          onClick={() => (props.page !== 1 ? move("prev") : null)}
+          className="cursor-pointer hover:text-grey-900"
+        >
           <svg
             className="h-6 w-6"
             xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +106,10 @@ const PaginationInterface = (props: {
             />
           </svg>
         </a>
-        <a onClick={() => move("next")}>
+        <a
+          onClick={() => (props.page !== totalPages ? move("next") : null)}
+          className="cursor-pointer hover:text-grey-900"
+        >
           <svg
             className="h-6 w-6"
             xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +123,10 @@ const PaginationInterface = (props: {
             />
           </svg>
         </a>
-        <a onClick={() => move("last")}>
+        <a
+          onClick={() => (props.page !== totalPages ? move("last") : null)}
+          className="cursor-pointer hover:text-grey-900"
+        >
           <svg
             className="h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"

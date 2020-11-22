@@ -6,7 +6,8 @@ export type Config = {
 };
 
 export type ResponseData = {
-  data?: FirebaseFirestore.DocumentData[] | FirebaseFirestore.DocumentData;
+  data: FirebaseFirestore.DocumentData[] | FirebaseFirestore.DocumentData;
+  total: number;
 };
 
 export type Name = {

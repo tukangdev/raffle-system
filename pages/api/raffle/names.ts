@@ -69,6 +69,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
               res.status(200);
               res.json({
+                total: snapshot.docs.length,
                 items: nextBatchRes.docs.map((doc) => ({
                   id: doc.id,
                   ...doc.data(),
@@ -91,6 +92,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
               res.status(200);
               res.json({
+                total: snapshot.docs.length,
                 items: prevBatchRes.docs.map((doc) => ({
                   id: doc.id,
                   ...doc.data(),
@@ -113,6 +115,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
               res.status(200);
               res.json({
+                total: snapshot.docs.length,
                 items: startBatchRes.docs.map((doc) => ({
                   id: doc.id,
                   ...doc.data(),
@@ -135,6 +138,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
               res.status(200);
               res.json({
+                total: snapshot.docs.length,
                 items: endBatchRes.docs.map((doc) => ({
                   id: doc.id,
                   ...doc.data(),
@@ -144,12 +148,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             }
           }
           default: {
-            await returnFirstQuery(namesRef, perPage, res);
+            await returnFirstQuery(namesRef, perPage, res, snapshot);
           }
         }
       } else {
         // Return first query on first load on clientside.
-        await returnFirstQuery(namesRef, perPage, res);
+        await returnFirstQuery(namesRef, perPage, res, snapshot);
       }
 
       // const last = snapshot.docs[snapshot.docs.length - 1];
@@ -251,7 +255,8 @@ async function returnFirstQuery(
     FirebaseFirestore.DocumentData
   >,
   perPage: string | string[],
-  res: NextApiResponse<any>
+  res: NextApiResponse<any>,
+  snapshot: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>
 ) {
   const firstQuery = namesRef
     .orderBy("name")
@@ -260,6 +265,7 @@ async function returnFirstQuery(
 
   res.status(200);
   res.json({
+    total: snapshot.docs.length,
     items: firstQuerySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),

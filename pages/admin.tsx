@@ -14,7 +14,7 @@ import { useCreateName, useDeleteName, useNames } from "../queries";
 
 const Admin = () => {
   const [page, setPage] = React.useState(1);
-  const [anchors, setAnchors] = React.useState<[string, string]>([]);
+  const [anchors, setAnchors] = React.useState<[string, string]>();
   const [perPage, setPerPage] = React.useState<5 | 10 | 30>(5);
   const [name, setName] = React.useState("");
   const [alertType, setAlertType] = React.useState<AlertType>(
@@ -46,7 +46,6 @@ const Admin = () => {
 
   const selectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      console.log("sad");
       setSelectList(
         resolvedData ? resolvedData.data.items.map(({ id }) => id) : []
       );
@@ -99,7 +98,6 @@ const Admin = () => {
       }
     );
   };
-
   return (
     <>
       <Nav />
@@ -311,7 +309,7 @@ const Admin = () => {
                   handlePerPage={(p: 5 | 10 | 30) => setPerPage(p)}
                   page={page}
                   handlePage={(p: number) => setPage(p)}
-                  dataCount={resolvedData?.data.items.length || 0}
+                  dataCount={resolvedData?.data.total || 0}
                 />
               </Card>
             )}
