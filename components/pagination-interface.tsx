@@ -8,7 +8,6 @@ const PaginationInterface = (props: {
   dataCount: number;
 }) => {
   const [perPage, setPerPage] = React.useState(5);
-  const [go, setGo] = React.useState<"next" | "prev" | "start" | "last">();
 
   const change = (event: React.ChangeEvent<HTMLSelectElement>) => {
     props.handlePerPage(parseInt(event.target.value));
@@ -19,7 +18,6 @@ const PaginationInterface = (props: {
 
   const move = (go: "next" | "prev" | "start" | "last") => {
     props.handleGo(go);
-    setGo(go);
 
     switch (go) {
       case "start": {
