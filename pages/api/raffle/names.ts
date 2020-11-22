@@ -145,24 +145,28 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     const { name } = req.body;
 
-    if (!name) {
-      res.status(400);
-      res.statusMessage = "Name is missing!";
-    }
+    if (req.headers["content-type"]?.includes("csv")) {
+    } else {
+      // IF REQUEST IS JSON
+      if (!name) {
+        res.status(400);
+        res.statusMessage = "Name is missing!";
+      }
 
-    try {
-      const result = await namesRef.add({
-        name,
-      });
+      try {
+        const result = await namesRef.add({
+          name,
+        });
 
-      const doc = await namesRef.doc(result.id).get();
+        const doc = await namesRef.doc(result.id).get();
 
-      res.status(200);
-      res.json({ data: { id: doc.id, ...doc.data() } });
-    } catch (err) {
-      console.error(err);
-      res.status(500);
-      res.statusMessage = err;
+        res.status(200);
+        res.json({ data: { id: doc.id, ...doc.data() } });
+      } catch (err) {
+        console.error(err);
+        res.status(500);
+        res.statusMessage = err;
+      }
     }
   }
 

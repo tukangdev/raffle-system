@@ -1,4 +1,3 @@
-import { resolve } from "path";
 import React from "react";
 import Alert from "../components/alert";
 import Button from "../components/button";
@@ -12,6 +11,7 @@ import TextInput from "../components/text-input";
 import { AlertType } from "../enum";
 import { useCreateName, useDeleteName, useNames } from "../queries";
 import debounce from "lodash.debounce";
+import FileUploader from "../components/dropzone";
 
 const Admin = () => {
   const [page, setPage] = React.useState(1);
@@ -21,6 +21,7 @@ const Admin = () => {
   const [alertType, setAlertType] = React.useState<AlertType>(
     AlertType.success
   );
+  const [showImporter, setShowImporter] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertText, setAlertText] = React.useState("");
@@ -126,26 +127,34 @@ const Admin = () => {
             className="lg:max-w-lg"
             title="Manage names"
             action={
-              <Button
-                leftIcon={
-                  <svg
-                    className="h-6 w-6 float-left mr-2"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                }
-              >
-                IMPORT CSV
-              </Button>
+              <div>
+                <Button
+                  onClick={() => setShowImporter(!showImporter)}
+                  leftIcon={
+                    <svg
+                      className="h-6 w-6 float-left mr-2"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                  }
+                >
+                  IMPORT CSV
+                </Button>
+                {showImporter && (
+                  <div className="left-0 sm:right-0 md:left-auto lg:right-auto absolute bg-white p-6 z-10 shadow-md mt-4">
+                    <FileUploader />
+                  </div>
+                )}
+              </div>
             }
           >
             <Card wrapperClass="flex flex-row items-center flex-wrap">
