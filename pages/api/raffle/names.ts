@@ -169,7 +169,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "DELETE") {
     try {
       const { names } = req.body;
-      const batch = firebase.firestore.batch();
 
       if (!names.length) {
         res.status(400);
@@ -177,14 +176,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return;
       }
 
+      const batch = firebase.firestore.batch();
       names.forEach((id: string) => {
         const ref = namesRef.doc(id);
         batch.delete(ref);
       });
-
       await batch.commit();
 
-      res.status(200);
+      res.status(200).send({});
     } catch (err) {
       console.error(err);
       res.status(500);

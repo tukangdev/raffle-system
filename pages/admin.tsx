@@ -151,7 +151,10 @@ const Admin = () => {
             <Card wrapperClass="flex flex-row items-center flex-wrap">
               <div className="hidden lg:flex flex-row items-center flex-grow gap-4 flex-wrap-reverse">
                 <div className="flex flex-row gap-4 lg:flex-shrink">
-                  <CheckboxInput onChange={selectAll} />
+                  <CheckboxInput
+                    checked={Boolean(selectList.length)}
+                    onChange={selectAll}
+                  />
                   <p>Select All</p>
                 </div>
                 <a
