@@ -1,11 +1,5 @@
-import {
-  queryCache,
-  useMutation,
-  usePaginatedQuery,
-  useQuery,
-} from "react-query";
+import { useMutation, usePaginatedQuery, useQueryCache } from "react-query";
 import axios, { AxiosPromise, AxiosRequestConfig } from "axios";
-import { NextApiResponse } from "next";
 import { Name } from "./types";
 
 const fetchData = <Result>(
@@ -34,8 +28,10 @@ export const useNames = (pagination: {
   perPage: 5 | 10 | 30;
   anchors?: [string, string];
   search: string;
-}) =>
-  usePaginatedQuery(
+}) => {
+  const queryCache = useQueryCache();
+
+  return usePaginatedQuery(
     [CACHE_KEYS.namesPaginate, pagination],
     (_, { search, go, perPage = 5, anchors = [] }) =>
       fetchData<{ items: Name[]; total: number }>(
@@ -43,6 +39,7 @@ export const useNames = (pagination: {
         `/api/raffle/names?q=${search}&go=${go}&firstAnchorId=${anchors[0]}&lastAnchorId=${anchors[1]}&perPage=${perPage}`
       ),
     {
+      refetchOnMount: "always",
       retry: false,
       onSuccess: (response) => {
         if (response && response.data.items) {
@@ -54,9 +51,11 @@ export const useNames = (pagination: {
       },
     }
   );
+};
 
-export const useCreateName = () =>
-  useMutation(
+export const useCreateName = () => {
+  const queryCache = useQueryCache();
+  return useMutation(
     ({ name }: { name: string }) =>
       fetchData<Name>("POST", "/api/raffle/names", {
         data: { name },
@@ -64,17 +63,17 @@ export const useCreateName = () =>
 
     {
       onSuccess: (response) => {
-        queryCache.setQueryData(
-          [CACHE_KEYS.names, response.data.id],
-          response.data
-        );
+        queryCache.invalidateQueries(CACHE_KEYS.namesPaginate);
         queryCache.invalidateQueries(CACHE_KEYS.names);
       },
     }
   );
+};
 
-export const useDeleteName = () =>
-  useMutation(
+export const useDeleteName = () => {
+  const queryCache = useQueryCache();
+
+  return useMutation(
     ({ ids }: { ids: string[] }) =>
       fetchData("DELETE", `/api/raffle/names`, {
         data: {
@@ -84,6 +83,7 @@ export const useDeleteName = () =>
 
     {
       onSuccess: (data, param) => {
+        queryCache.invalidateQueries(CACHE_KEYS.namesPaginate);
         queryCache.invalidateQueries(CACHE_KEYS.names);
         param.ids.map((id) =>
           queryCache.setQueryData([CACHE_KEYS.names, id], data)
@@ -91,6 +91,7 @@ export const useDeleteName = () =>
       },
     }
   );
+};
 
 const CACHE_KEYS = {
   names: "names",
