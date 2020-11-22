@@ -21,8 +21,6 @@ const PaginationInterface = (props: {
     props.handleGo(go);
     setGo(go);
 
-    console.log(props.page);
-
     switch (go) {
       case "start": {
         props.handlePage(1);

@@ -44,7 +44,6 @@ export const useNames = (pagination: {
     {
       retry: false,
       onSuccess: (response) => {
-        console.log(response);
         if (response && response.data.items) {
           response.data.items.map(
             ({ id, name }: { id: string; name: string }) =>

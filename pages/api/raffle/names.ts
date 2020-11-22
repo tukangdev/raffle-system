@@ -30,8 +30,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             .limitToLast(parseInt(perPage as string))
         : undefined;
 
-      console.log(firstAnchorId, lastAnchorId);
-
       if (firstAnchorId && lastAnchorId) {
         const firstAnchorDoc = await namesRef
           .doc(firstAnchorId as string)
@@ -59,14 +57,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             if (nextBatch) {
               const nextBatchRes = await nextBatch.get();
 
-              console.log(
-                "next",
-                nextBatchRes.docs.map((doc) => ({
-                  id: doc.id,
-                  ...doc.data(),
-                }))
-              );
-
               res.status(200);
               res.json({
                 total: snapshot.docs.length,
@@ -81,14 +71,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           case "prev": {
             if (prevBatch) {
               const prevBatchRes = await prevBatch.get();
-
-              console.log(
-                "prev",
-                prevBatchRes.docs.map((doc) => ({
-                  id: doc.id,
-                  ...doc.data(),
-                }))
-              );
 
               res.status(200);
               res.json({
@@ -105,14 +87,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             if (startBatch) {
               const startBatchRes = await startBatch.get();
 
-              console.log(
-                "start",
-                startBatchRes.docs.map((doc) => ({
-                  id: doc.id,
-                  ...doc.data(),
-                }))
-              );
-
               res.status(200);
               res.json({
                 total: snapshot.docs.length,
@@ -127,14 +101,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           case "last": {
             if (endBatch) {
               const endBatchRes = await endBatch.get();
-
-              console.log(
-                "last",
-                endBatchRes.docs.map((doc) => ({
-                  id: doc.id,
-                  ...doc.data(),
-                }))
-              );
 
               res.status(200);
               res.json({
@@ -155,44 +121,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         // Return first query on first load on clientside.
         await returnFirstQuery(namesRef, perPage, res, snapshot);
       }
-
-      // const last = snapshot.docs[snapshot.docs.length - 1];
-      // const start = snapshot.docs[0];
-
-      // const previous = namesRef
-      //   .orderBy("name")
-      //   .endAt(last.data().name)
-      //   .limit(parseInt(req.query.perPage as string));
-
-      // const next = namesRef
-      //   .orderBy("name")
-      //   .startAfter(last.data().name)
-      //   .limit(parseInt(req.query.perPage as string));
-
-      // switch (req.query.go) {
-      //   case "next": {
-      //     const s = await next.get();
-      //     res.status(200);
-      //     res.json({
-      //       items: s.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-      //     });
-      //     break;
-      //   }
-      //   case "prev": {
-      //     const s = await previous.get();
-      //     res.status(200);
-      //     res.json({
-      //       items: s.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-      //     });
-      //     break;
-      //   }
-      //   default: {
-      //     res.status(200);
-      //     res.json({
-      //       items: snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-      //     });
-      //   }
-      // }
     } catch (err) {
       console.error(err);
       res.status(500);
@@ -244,7 +172,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       res.status(200);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       res.status(500);
       res.statusMessage = err;
     }
