@@ -72,7 +72,7 @@ const Admin = () => {
 
   const submitName = async (name: string) => {
     await create(
-      { name },
+      { names: [name] },
       {
         onSuccess: () => {
           setName("");
@@ -151,7 +151,7 @@ const Admin = () => {
                 </Button>
                 {showImporter && (
                   <div className="left-0 sm:right-0 md:left-auto lg:right-auto absolute bg-white p-6 z-10 shadow-md mt-4">
-                    <FileUploader />
+                    <FileUploader onSuccess={() => setShowImporter(false)} />
                   </div>
                 )}
               </div>
@@ -192,7 +192,7 @@ const Admin = () => {
                   }
                   placeholder="Add a name"
                   className="w-full lg:w-1/4 md:w-1/3"
-                  rightIcon={
+                  righticon={
                     <a onClick={() => submitName(name)}>
                       <svg
                         className="h-6 w-6 text-primary"
@@ -245,7 +245,7 @@ const Admin = () => {
                     }
                     placeholder="Add a name"
                     className="w-full md:w-1/3"
-                    rightIcon={
+                    righticon={
                       <a onClick={() => submitName(name)}>
                         <svg
                           className="h-6 w-6 text-primary"

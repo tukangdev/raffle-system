@@ -143,10 +143,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (req.method === "POST") {
-    const { name } = req.body;
+    const { names } = req.body;
 
-    if (req.headers["content-type"]?.includes("csv")) {
+    if (names.length && names.length > 1) {
+      const batch = firebase.firestore.batch();
+
+      names.forEach((name: string) => {
+        batch.set(namesRef.doc(), { name });
+      });
+
+      await batch.commit();
+
+      res.status(200).send({});
     } else {
+      const name = names.length ? names[0] : names;
       // IF REQUEST IS JSON
       if (!name) {
         res.status(400);
@@ -198,9 +208,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 async function returnFirstQuery(
   res: NextApiResponse<any>,
   snapshot: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>,
-  snapshotWithLimit: FirebaseFirestore.QuerySnapshot<
-    FirebaseFirestore.DocumentData
-  >
+  snapshotWithLimit: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>
 ) {
   res.status(200);
   res.json({

@@ -55,12 +55,13 @@ export const useNames = (pagination: {
 
 export const useCreateName = () => {
   const queryCache = useQueryCache();
-  return useMutation(
-    ({ name }: { name: string }) =>
-      fetchData<Name>("POST", "/api/raffle/names", {
-        data: { name },
-      }),
 
+  return useMutation(
+    ({ names }: { names: string[] }) => {
+      return fetchData<Name>("POST", "/api/raffle/names", {
+        data: { names },
+      });
+    },
     {
       onSuccess: (response) => {
         queryCache.invalidateQueries(CACHE_KEYS.namesPaginate);
