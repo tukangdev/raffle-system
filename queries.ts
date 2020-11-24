@@ -1,6 +1,12 @@
-import { useMutation, usePaginatedQuery, useQueryCache } from "react-query";
+import {
+  useMutation,
+  usePaginatedQuery,
+  useQuery,
+  useQueryCache,
+} from "react-query";
 import axios, { AxiosPromise, AxiosRequestConfig } from "axios";
-import { Name } from "./types";
+import { Config, Name } from "./types";
+import { Settings } from "./enum";
 
 const fetchData = <Result>(
   method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
@@ -89,6 +95,32 @@ export const useDeleteName = () => {
         param.ids.map((id) =>
           queryCache.setQueryData([CACHE_KEYS.names, id], data)
         );
+      },
+    }
+  );
+};
+
+export const useConfig = () => {
+  // const queryCache = useQueryCache();
+
+  return useQuery(CACHE_KEYS.config, () =>
+    fetchData<FirebaseFirestore.DocumentData>("GET", "/api/raffle/config")
+  );
+};
+
+export const useConfigUpdate = () => {
+  const queryCache = useQueryCache();
+
+  return useMutation(
+    ({ value, setting }: { value: string | string[]; setting: Settings }) =>
+      fetchData("PUT", `/api/raffle/config/${setting}`, {
+        data: { value },
+      }),
+
+    {
+      onSuccess: (data, param) => {
+        queryCache.invalidateQueries(CACHE_KEYS.config);
+        queryCache.setQueryData([CACHE_KEYS.config, param.setting], data);
       },
     }
   );

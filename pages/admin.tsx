@@ -8,12 +8,30 @@ import Nav from "../components/nav";
 import PaginationInterface from "../components/pagination-interface";
 import SearchInput from "../components/search-input";
 import TextInput from "../components/text-input";
-import { AlertType } from "../enum";
-import { useCreateName, useDeleteName, useNames } from "../queries";
+import { AlertType, Settings } from "../enum";
+import {
+  useConfig,
+  useConfigUpdate,
+  useCreateName,
+  useDeleteName,
+  useNames,
+} from "../queries";
 import debounce from "lodash.debounce";
 import FileUploader from "../components/dropzone";
+import { TwitterPicker } from "react-color";
+import config from "./api/raffle/config";
 
 const Admin = () => {
+  const [create, { isLoading: isLoadingCreate }] = useCreateName();
+  const [remove, { isLoading: isLoadingRemove }] = useDeleteName();
+  const {
+    isFetching: isLoadingConfig,
+    isError: isErrorConfig,
+    data: configData,
+    error,
+  } = useConfig();
+  const [update, { isLoading: isLoadingConfigUpdate }] = useConfigUpdate();
+
   const [page, setPage] = React.useState(1);
   const [anchors, setAnchors] = React.useState<[string, string]>();
   const [perPage, setPerPage] = React.useState<5 | 10 | 30>(5);
@@ -27,6 +45,15 @@ const Admin = () => {
   const [alertText, setAlertText] = React.useState("");
   const [selectList, setSelectList] = React.useState<string[]>([]);
   const [go, setGo] = React.useState<"next" | "prev" | "start" | "last">();
+
+  const [bgColor, setBgColor] = React.useState("");
+  const [bgImage, setBgImage] = React.useState("");
+  const [cardBgColor, setCardBgColor] = React.useState("");
+  const [cardLogoImage, setCardLogoImage] = React.useState("");
+  const [showBgColorPicker, setShowBgColorPicker] = React.useState(false);
+  const [showCardBgColorPicker, setShowCardBgColorPicker] = React.useState(
+    false
+  );
   const {
     isError,
     resolvedData,
@@ -38,10 +65,9 @@ const Admin = () => {
     anchors,
     search,
   });
-  const [create, { isLoading: isLoadingCreate }] = useCreateName();
-  const [remove, { isLoading: isLoadingRemove }] = useDeleteName();
 
-  const isLoading = isLoadingCreate || isLoadingRemove || isLoadingNames;
+  const isLoading =
+    isLoadingCreate || isLoadingRemove || isLoadingNames || isLoadingConfig;
 
   // Only runs on first load. Status dictates that
   React.useEffect(() => {
@@ -50,6 +76,13 @@ const Admin = () => {
         resolvedData.data.items[0].id,
         resolvedData.data.items[resolvedData.data.items.length - 1].id,
       ]);
+    }
+
+    if (configData) {
+      setBgColor(configData.data.bgColor);
+      setBgImage(configData.data.bgImage);
+      setCardBgColor(configData.data.cardBgColor);
+      setCardLogoImage(configData.data.cardLogoImage);
     }
   }, [status]);
 
@@ -107,6 +140,8 @@ const Admin = () => {
       }
     );
   };
+
+  console.log(bgColor);
   return (
     <>
       <Nav />
@@ -350,7 +385,71 @@ const Admin = () => {
               <div className="w-full lg:w-1/2 lg:pr-2">
                 <div className="mt-6">
                   <label className="font-semibold">Background Color</label>
-                  <TextInput />
+                  <div
+                    style={{ backgroundColor: bgColor }}
+                    className="h-6 w-full my-2 rounded-lg"
+                  ></div>
+                  <TextInput
+                    value={bgColor}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setBgColor(e.target.value)
+                    }
+                    righticon={
+                      <a
+                        onClick={() => {
+                          update(
+                            {
+                              value: bgColor,
+                              setting: Settings.bgColor,
+                            },
+                            {
+                              onSuccess: () => {
+                                alert(
+                                  AlertType.success,
+                                  "Background color updated!"
+                                );
+                              },
+                            }
+                          );
+                        }}
+                      >
+                        <svg
+                          className={`text-primary h-6 w-6 ${
+                            configData?.data.bgColor === bgColor
+                              ? "hidden"
+                              : "block"
+                          }`}
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </a>
+                    }
+                    onClick={() => setShowBgColorPicker(!showBgColorPicker)}
+                  />
+                  {configData?.data.bgColor !== bgColor && (
+                    <span className="text-xs text-grey-500">
+                      Click &#10004; to update.
+                    </span>
+                  )}
+                  {showBgColorPicker && (
+                    <div className="absolute mt-2">
+                      <TwitterPicker
+                        onChangeComplete={(color) => {
+                          setBgColor(color.hex);
+                          setShowBgColorPicker(false);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col mt-6">
                   <label className="font-semibold">Background Image</label>
@@ -378,7 +477,73 @@ const Admin = () => {
               <div className="w-full lg:w-1/2 lg:pl-2">
                 <div className="mt-6">
                   <label className="font-semibold">Card Background Color</label>
-                  <TextInput />
+                  <div
+                    style={{ backgroundColor: cardBgColor }}
+                    className="h-6 w-full my-2 rounded-lg"
+                  ></div>
+                  <TextInput
+                    value={cardBgColor}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setCardBgColor(e.target.value)
+                    }
+                    onClick={() =>
+                      setShowCardBgColorPicker(!showCardBgColorPicker)
+                    }
+                    righticon={
+                      <a
+                        onClick={() => {
+                          update(
+                            {
+                              value: cardBgColor,
+                              setting: Settings.cardBgColor,
+                            },
+                            {
+                              onSuccess: () => {
+                                alert(
+                                  AlertType.success,
+                                  "Card background color updated!"
+                                );
+                              },
+                            }
+                          );
+                        }}
+                      >
+                        <svg
+                          className={`text-primary h-6 w-6 ${
+                            configData?.data.cardBgColor === cardBgColor
+                              ? "hidden"
+                              : "block"
+                          }`}
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </a>
+                    }
+                  />
+                  {configData?.data.cardBgColor !== cardBgColor && (
+                    <span className="text-xs text-grey-500">
+                      Click &#10004; to update.
+                    </span>
+                  )}
+                  {showCardBgColorPicker && (
+                    <div className="absolute mt-2">
+                      <TwitterPicker
+                        onChangeComplete={(color) => {
+                          setCardBgColor(color.hex);
+                          setShowCardBgColorPicker(false);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col mt-6">
                   <label className="font-semibold">Card Logo Image</label>

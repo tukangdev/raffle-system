@@ -8,7 +8,7 @@ type ResponseData = {
 
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<FirebaseFirestore.DocumentData | undefined>
 ) => {
   if (req.method === "GET") {
     try {
@@ -16,7 +16,7 @@ export default async (
       const doc = await configRef.get();
 
       res.status(200);
-      res.json({ data: doc.data() });
+      res.json(doc.data());
     } catch (err) {
       console.error(err);
       res.status(500);
