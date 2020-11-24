@@ -15,7 +15,7 @@ const PaginationInterface = (props: {
     setPerPage(parseInt(event.target.value));
   };
 
-  const totalPages = Math.round(props.dataCount / perPage);
+  const totalPages = Math.ceil(props.dataCount / perPage);
 
   const move = (go: "next" | "prev" | "start" | "last") => {
     props.handleGo(go);
@@ -55,8 +55,8 @@ const PaginationInterface = (props: {
             <g fill="none">
               <path
                 opacity=".2"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14zm0 3c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10z"
                 fill="#626262"
               />

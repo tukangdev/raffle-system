@@ -15,9 +15,11 @@
     "lodash.debounce": "^4.0.8",
     "next": "10.0.1",
     "node-fetch": "^2.6.1",
+    "postcss-flexbugs-fixes": "^5.0.2",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-dropzone": "^11.2.4",
+    "react-papaparse": "^3.11.0",
     "react-query": "^2.26.3",
     "react-query-devtools": "^2.6.3"
   },
