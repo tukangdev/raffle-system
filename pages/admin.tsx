@@ -20,6 +20,7 @@ import debounce from "lodash.debounce";
 import FileUploader from "../components/dropzone";
 import { TwitterPicker } from "react-color";
 import config from "./api/raffle/config";
+import Select from "../components/select";
 
 const Admin = () => {
   const [create, { isLoading: isLoadingCreate }] = useCreateName();
@@ -54,6 +55,10 @@ const Admin = () => {
   const [showCardBgColorPicker, setShowCardBgColorPicker] = React.useState(
     false
   );
+  const [gradient, setGradient] = React.useState<
+    "Linear (2 Colors)" | "Linear (3 Colors)" | "None"
+  >("None");
+
   const {
     isError,
     resolvedData,
@@ -476,11 +481,19 @@ const Admin = () => {
               </div>
               <div className="w-full lg:w-1/2 lg:pl-2">
                 <div className="mt-6">
-                  <label className="font-semibold">Card Background Color</label>
+                  <span className="font-semibold">Card Background Color</span>
+                  <Select
+                    options={["Linear (2 Colors)", "Linear (3 Colors)", "None"]}
+                    value={gradient}
+                    onSelect={setGradient}
+                    label="Gradient"
+                  />
+
                   <div
                     style={{ backgroundColor: cardBgColor }}
                     className="h-6 w-full my-2 rounded-lg"
                   ></div>
+
                   <TextInput
                     value={cardBgColor}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -529,10 +542,12 @@ const Admin = () => {
                       </a>
                     }
                   />
-                  {configData?.data.cardBgColor !== cardBgColor && (
+                  {configData?.data.cardBgColor !== cardBgColor ? (
                     <span className="text-xs text-grey-500">
                       Click &#10004; to update.
                     </span>
+                  ) : (
+                    <span className="text-xs text-grey-500">First color</span>
                   )}
                   {showCardBgColorPicker && (
                     <div className="absolute mt-2">
