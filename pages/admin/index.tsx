@@ -311,7 +311,7 @@ const Admin = (
               </div>
             }
           >
-            <Card wrapperClass="flex flex-row items-center flex-wrap">
+            <Card wrapperclass="flex flex-row items-center flex-wrap">
               <div className="hidden lg:flex flex-row items-center flex-grow gap-4 flex-wrap-reverse">
                 <div className="flex flex-row gap-4 lg:flex-shrink">
                   <CheckboxInput
@@ -334,7 +334,7 @@ const Admin = (
                 <SearchInput
                   search={search}
                   handleSearch={(v: string) => setSearch(v)}
-                  wrapperClass="w-full lg:w-1/3 md:w-1/3"
+                  wrapperclass="w-full lg:w-1/3 md:w-1/3"
                 />
                 <TextInput
                   value={name}
@@ -387,7 +387,7 @@ const Admin = (
                     handleSearch={(v: string) =>
                       debounce(() => setSearch(v), 1000)
                     }
-                    wrapperClass="w-full md:w-1/2"
+                    wrapperclass="w-full md:w-1/2"
                   />
                   <TextInput
                     value={name}
@@ -424,7 +424,7 @@ const Admin = (
                 Something went wrong. Please try reloading the page.
               </div>
             ) : (
-              <Card wrapperClass="mt-4 px-0 py-0">
+              <Card wrapperclass="mt-4 px-0 py-0">
                 <ul>
                   {resolvedData ? (
                     resolvedData.data.items.map(
@@ -451,7 +451,7 @@ const Admin = (
                                 );
                               }
                             }}
-                            wrapperClass="inline-block float-left mr-4"
+                            wrapperclass="inline-block float-left mr-4"
                           />
                           {name}
                         </li>

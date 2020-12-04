@@ -1,10 +1,10 @@
 import React from "react";
 
 type CheckboxInputProps = {
-  wrapperClass?: string;
+  wrapperclass?: string;
 } & React.HTMLProps<HTMLInputElement>;
 const CheckboxInput = (props: CheckboxInputProps) => (
-  <div className={`relative h-6 w-6 ${props.wrapperClass}`}>
+  <div className={`relative h-6 w-6 ${props.wrapperclass}`}>
     <label className="checkbox-container block relative cursor-pointer select-none">
       <input
         {...props}

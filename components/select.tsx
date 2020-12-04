@@ -43,9 +43,9 @@ const Select = (props: SelectProps) => {
               aria-hidden="true"
             >
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                clip-rule="evenodd"
+                clipRule="evenodd"
               />
             </svg>
           </span>
@@ -63,8 +63,9 @@ const Select = (props: SelectProps) => {
             aria-activedescendant="listbox-item-3"
             className="max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
           >
-            {props.options.map((option) => (
+            {props.options.map((option, i) => (
               <li
+                key={i}
                 id="listbox-item-0"
                 role="option"
                 className="text-gray-900 select-none relative py-2 pl-3 pr-9 hover:bg-red-100 cursor-pointer"
@@ -88,9 +89,9 @@ const Select = (props: SelectProps) => {
                       aria-hidden="true"
                     >
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       />
                     </svg>
                   )}

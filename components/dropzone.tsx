@@ -5,7 +5,7 @@ import { useCreateName } from "../queries";
 import Button from "./button";
 
 type DropzoneProps = {
-  wrapperClass?: string;
+  wrapperclass?: string;
   onSuccess: Function;
 };
 
@@ -57,7 +57,7 @@ const Dropzone = (props: DropzoneProps) => {
     <div>
       <div
         {...getRootProps({ className: "dropzone" })}
-        className={`text-center p-6 cursor-pointer mb-6 border-primary border-dashed border-2 ${props.wrapperClass}`}
+        className={`text-center p-6 cursor-pointer mb-6 border-primary border-dashed border-2 ${props.wrapperclass}`}
       >
         <input {...getInputProps()} />
         <p>Drag 'n' drop file here, or click to select a file</p>
