@@ -16,11 +16,12 @@ import {
   useDeleteName,
   useNames,
 } from "../queries";
+import { Line } from "rc-progress";
 import debounce from "lodash.debounce";
 import FileUploader from "../components/dropzone";
 import { TwitterPicker } from "react-color";
-import config from "./api/raffle/config";
 import Select from "../components/select";
+import { storage } from "../lib/firebase-client";
 
 const Admin = () => {
   const [create, { isLoading: isLoadingCreate }] = useCreateName();
@@ -46,7 +47,8 @@ const Admin = () => {
   const [alertText, setAlertText] = React.useState("");
   const [selectList, setSelectList] = React.useState<string[]>([]);
   const [go, setGo] = React.useState<"next" | "prev" | "start" | "last">();
-
+  const [bgImageFile, setBgImageFile] = React.useState<File | null>(null);
+  const [cardLogoFile, setCardLogoFile] = React.useState<File | null>(null);
   const [bgColor, setBgColor] = React.useState("");
   const [bgImage, setBgImage] = React.useState("");
   const [cardBgColor, setCardBgColor] = React.useState<string[]>(["", "", ""]);
@@ -61,6 +63,10 @@ const Admin = () => {
     text: "Linear (2 Colors)" | "Linear (3 Colors)" | "None";
     value: 2 | 3 | 1;
   }>({ text: "None", value: 1 });
+  const [bgImageUploadProgress, setBgImageUploadProgress] = React.useState(0);
+  const [cardLogoUploadProgress, setCardLogoUploadProgress] = React.useState(0);
+  const cardLogoUploadRef = React.useRef<HTMLInputElement>();
+  const bgImageUploadRef = React.useRef<HTMLInputElement>();
 
   const {
     isError,
@@ -91,9 +97,6 @@ const Admin = () => {
       setBgImage(configData.data.bgImage);
       setCardBgColor(configData.data.cardBgColor);
       setCardLogoImage(configData.data.cardLogoImage);
-      const truthyArray = configData.data.cardBgColor.filter(
-        (color: string) => color !== ""
-      );
 
       switch (configData.data.gradient) {
         case 3: {
@@ -165,6 +168,60 @@ const Admin = () => {
         },
       }
     );
+  };
+
+  const handleFireBaseUpload = (setting: Settings, file: File | null) => {
+    if (!file) {
+      console.error(`not an image, the image file is a ${typeof file}`);
+    } else {
+      const uploadTask = storage
+        .ref(`/images/${setting}-${file.name}-${file.lastModified}`)
+        .put(file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          let progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          if (setting === Settings.bgImage) {
+            setBgImageUploadProgress(progress);
+          } else {
+            setCardLogoUploadProgress(progress);
+          }
+        },
+        (err) => {
+          console.log(err);
+        },
+        () => {
+          storage
+            .ref("images")
+            .child(`${setting}-${file.name}-${file.lastModified}`)
+            .getDownloadURL()
+            .then((fireBaseUrl) => {
+              console.log(fireBaseUrl);
+              update(
+                {
+                  value: fireBaseUrl,
+                  setting,
+                },
+                {
+                  onSuccess: () => {
+                    alert(AlertType.success, "Background image updated!");
+                    setBgImageUploadProgress(0);
+                    setCardLogoUploadProgress(0);
+                    if (cardLogoUploadRef.current) {
+                      cardLogoUploadRef.current.value = "";
+                    }
+
+                    if (bgImageUploadRef.current) {
+                      bgImageUploadRef.current.value = "";
+                    }
+                  },
+                }
+              );
+            });
+        }
+      );
+    }
   };
 
   return (
@@ -478,8 +535,25 @@ const Admin = () => {
                 </div>
                 <div className="flex flex-col mt-6">
                   <label className="font-semibold">Background Image</label>
-                  <input type="file" className="my-6"></input>
+                  {configData?.data.bgImage && (
+                    <img
+                      src={configData.data.bgImage}
+                      className="rounded-lg mt-4 w-full h-auto"
+                    />
+                  )}
+                  <input
+                    type="file"
+                    className="my-6"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setBgImageFile(e.target.files ? e.target.files[0] : null)
+                    }
+                  ></input>
                   <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleFireBaseUpload(Settings.bgImage, bgImageFile);
+                    }}
                     leftIcon={
                       <svg
                         className="h-5 w-5 float-left mr-2"
@@ -494,9 +568,21 @@ const Admin = () => {
                         />
                       </svg>
                     }
+                    disabled={!bgImageFile}
                   >
-                    UPLOAD IMAGE
+                    {bgImageUploadProgress
+                      ? `Uploading - ${bgImageUploadProgress}%`
+                      : "UPLOAD IMAGE"}
                   </Button>
+                  {!!bgImageUploadProgress && (
+                    <Line
+                      className="my-4"
+                      percent={bgImageUploadProgress}
+                      strokeWidth={4}
+                      trailWidth={4}
+                      strokeColor="#ae2c22"
+                    />
+                  )}
                 </div>
               </div>
               <div className="w-full lg:w-1/2 lg:pl-2">
@@ -817,8 +903,29 @@ const Admin = () => {
 
                 <div className="flex flex-col mt-6">
                   <label className="font-semibold">Card Logo Image</label>
-                  <input type="file" className="my-6"></input>
+                  {configData?.data.cardLogoImage && (
+                    <img
+                      src={configData.data.cardLogoImage}
+                      className="rounded-lg mt-4 w-full h-auto"
+                    />
+                  )}
+                  <input
+                    type="file"
+                    ref={cardLogoUploadRef}
+                    className="my-6"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setCardLogoFile(e.target.files ? e.target.files[0] : null)
+                    }
+                  ></input>
                   <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleFireBaseUpload(
+                        Settings.cardLogoImage,
+                        cardLogoFile
+                      );
+                    }}
                     leftIcon={
                       <svg
                         className="h-5 w-5 float-left mr-2"
@@ -834,8 +941,19 @@ const Admin = () => {
                       </svg>
                     }
                   >
-                    UPLOAD IMAGE
+                    {cardLogoUploadProgress
+                      ? `Uploading - ${cardLogoUploadProgress}%`
+                      : "UPLOAD IMAGE"}
                   </Button>
+                  {!!cardLogoUploadProgress && (
+                    <Line
+                      className="my-4"
+                      percent={cardLogoUploadProgress}
+                      strokeWidth={4}
+                      trailWidth={4}
+                      strokeColor="#ae2c22"
+                    />
+                  )}
                 </div>
               </div>
             </div>

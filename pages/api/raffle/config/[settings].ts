@@ -21,16 +21,14 @@ export default async (
     const { value } = req.body;
     const configRef = firebase.firestore.collection("config").doc("main");
     try {
-      let message: string = "";
       await firebase.firestore.runTransaction(async (t) => {
         t.update(configRef, { [settings as string]: value });
-        message = `Updated ${SETTINGS_TEXT[settings]}!`;
       });
 
       const doc = await configRef.get();
 
       res.status(200);
-      res.json({ data: doc.data(), message });
+      res.json({ data: doc.data() });
     } catch (err) {
       console.error(err);
       res.status(500);
