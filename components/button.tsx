@@ -16,7 +16,7 @@ const Button = (props: ButtonProps) => (
     type={props.type as "button" | "submit" | "reset" | undefined}
     className={`bg-primary px-4 py-2 text-white ${
       props.isDisabled && "bg-grey-600"
-    }`}
+    } ${props.className}`}
   >
     {props.leftIcon}
     {props.children}

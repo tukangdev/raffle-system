@@ -17,6 +17,7 @@
     "multer": "^1.4.2",
     "next": "10.0.1",
     "node-fetch": "^2.6.1",
+    "nookies": "^2.5.0",
     "postcss-flexbugs-fixes": "^5.0.2",
     "rc-progress": "^3.1.1",
     "react": "17.0.1",

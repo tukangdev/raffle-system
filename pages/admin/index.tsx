@@ -1,29 +1,66 @@
 import React from "react";
-import Alert from "../components/alert";
-import Button from "../components/button";
-import Card from "../components/card";
-import CheckboxInput from "../components/checkbox-input";
-import Column from "../components/column";
-import Nav from "../components/nav";
-import PaginationInterface from "../components/pagination-interface";
-import SearchInput from "../components/search-input";
-import TextInput from "../components/text-input";
-import { AlertType, Settings } from "../enum";
+import Alert from "../../components/alert";
+import Button from "../../components/button";
+import Card from "../../components/card";
+import CheckboxInput from "../../components/checkbox-input";
+import Column from "../../components/column";
+import Nav from "../../components/nav";
+import PaginationInterface from "../../components/pagination-interface";
+import SearchInput from "../../components/search-input";
+import TextInput from "../../components/text-input";
+import { AlertType, Settings } from "../../enum";
 import {
   useConfig,
   useConfigUpdate,
   useCreateName,
   useDeleteName,
   useNames,
-} from "../queries";
+} from "../../queries";
 import { Line } from "rc-progress";
 import debounce from "lodash.debounce";
-import FileUploader from "../components/dropzone";
+import FileUploader from "../../components/dropzone";
 import { TwitterPicker } from "react-color";
-import Select from "../components/select";
-import { storage } from "../lib/firebase-client";
+import Select from "../../components/select";
+import { storage } from "../../lib/firebase-client";
+import firebaseAdmin from "../../lib/firebase";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import nookies from "nookies";
 
-const Admin = () => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  try {
+    const cookies = nookies.get(ctx);
+    console.log(JSON.stringify(cookies, null, 2));
+    const token = await firebaseAdmin.auth.verifyIdToken(cookies.token);
+    const { uid, email } = token;
+
+    // the user is authenticated!
+    // FETCH STUFF HERE
+
+    return {
+      props: { message: `Your email is ${email} and your UID is ${uid}.` },
+    };
+  } catch (err) {
+    // either the `token` cookie didn't exist
+    // or token verification failed
+    // either way: redirect to the login page
+    // either the `token` cookie didn't exist
+    // or token verification failed
+    // either way: redirect to the login page
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/admin/login",
+      },
+      // `as never` is required for correct type inference
+      // by InferGetServerSidePropsType below
+      props: {} as never,
+    };
+  }
+};
+
+const Admin = (
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) => {
   const [create, { isLoading: isLoadingCreate }] = useCreateName();
   const [remove, { isLoading: isLoadingRemove }] = useDeleteName();
   const {
@@ -65,8 +102,8 @@ const Admin = () => {
   }>({ text: "None", value: 1 });
   const [bgImageUploadProgress, setBgImageUploadProgress] = React.useState(0);
   const [cardLogoUploadProgress, setCardLogoUploadProgress] = React.useState(0);
-  const cardLogoUploadRef = React.useRef<HTMLInputElement>();
-  const bgImageUploadRef = React.useRef<HTMLInputElement>();
+  const cardLogoUploadRef = React.useRef<HTMLInputElement>(null);
+  const bgImageUploadRef = React.useRef<HTMLInputElement>(null);
 
   const {
     isError,
@@ -545,6 +582,7 @@ const Admin = () => {
                     type="file"
                     className="my-6"
                     accept="image/*"
+                    ref={bgImageUploadRef}
                     onChange={(e) =>
                       setBgImageFile(e.target.files ? e.target.files[0] : null)
                     }
