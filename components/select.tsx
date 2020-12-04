@@ -1,9 +1,16 @@
 import React from "react";
 
 type SelectProps = {
-  options: string[];
-  value: string;
+  options: {
+    text: "Linear (2 Colors)" | "Linear (3 Colors)" | "None";
+    value: 2 | 3 | 1;
+  }[];
+  value: {
+    text: "Linear (2 Colors)" | "Linear (3 Colors)" | "None";
+    value: 2 | 3 | 1;
+  };
   onSelect: Function;
+  onAfterSelect?: Function;
   label: string;
 };
 
@@ -26,7 +33,7 @@ const Select = (props: SelectProps) => {
           aria-labelledby="listbox-label"
           className="relative border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 sm:text-sm border-2 border-grey-300 bg-white h-10 px-5 rounded-lg text-sm w-full"
         >
-          <span className="ml-3 block truncate">{props.value}</span>
+          <span className="ml-3 block truncate">{props.value.text}</span>
           <span className="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
             <svg
               className="h-5 w-5 text-gray-400"
@@ -63,15 +70,16 @@ const Select = (props: SelectProps) => {
                 className="text-gray-900 select-none relative py-2 pl-3 pr-9 hover:bg-red-100 cursor-pointer"
                 onClick={() => {
                   props.onSelect(option);
+                  props.onAfterSelect && props.onAfterSelect();
                   setShowOptions(false);
                 }}
               >
                 <span className="ml-3 block font-normal truncate">
-                  {option}
+                  {option.text}
                 </span>
 
                 <span className="absolute inset-y-0 right-0 flex items-center pr-4">
-                  {props.value === option && (
+                  {props.value.text === option.text && (
                     <svg
                       className="h-5 w-5"
                       xmlns="http://www.w3.org/2000/svg"

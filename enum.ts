@@ -3,6 +3,7 @@ export enum Settings {
   bgImage = "bgImage",
   cardBgColor = "cardBgColor",
   cardLogoImage = "cardLogoImage",
+  gradient = "gradient",
 }
 
 export enum AlertType {

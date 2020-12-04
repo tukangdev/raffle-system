@@ -112,7 +112,13 @@ export const useConfigUpdate = () => {
   const queryCache = useQueryCache();
 
   return useMutation(
-    ({ value, setting }: { value: string | string[]; setting: Settings }) =>
+    ({
+      value,
+      setting,
+    }: {
+      value: string | string[] | number;
+      setting: Settings;
+    }) =>
       fetchData("PUT", `/api/raffle/config/${setting}`, {
         data: { value },
       }),

@@ -49,15 +49,18 @@ const Admin = () => {
 
   const [bgColor, setBgColor] = React.useState("");
   const [bgImage, setBgImage] = React.useState("");
-  const [cardBgColor, setCardBgColor] = React.useState("");
+  const [cardBgColor, setCardBgColor] = React.useState<string[]>(["", "", ""]);
   const [cardLogoImage, setCardLogoImage] = React.useState("");
   const [showBgColorPicker, setShowBgColorPicker] = React.useState(false);
-  const [showCardBgColorPicker, setShowCardBgColorPicker] = React.useState(
-    false
-  );
-  const [gradient, setGradient] = React.useState<
-    "Linear (2 Colors)" | "Linear (3 Colors)" | "None"
-  >("None");
+  const [showCardBgColorPicker, setShowCardBgColorPicker] = React.useState([
+    false,
+    false,
+    false,
+  ]);
+  const [gradient, setGradient] = React.useState<{
+    text: "Linear (2 Colors)" | "Linear (3 Colors)" | "None";
+    value: 2 | 3 | 1;
+  }>({ text: "None", value: 1 });
 
   const {
     isError,
@@ -88,6 +91,24 @@ const Admin = () => {
       setBgImage(configData.data.bgImage);
       setCardBgColor(configData.data.cardBgColor);
       setCardLogoImage(configData.data.cardLogoImage);
+      const truthyArray = configData.data.cardBgColor.filter(
+        (color: string) => color !== ""
+      );
+
+      switch (configData.data.gradient) {
+        case 3: {
+          setGradient({ text: "Linear (3 Colors)", value: 3 });
+          break;
+        }
+        case 2: {
+          setGradient({ text: "Linear (2 Colors)", value: 2 });
+          break;
+        }
+        default: {
+          setGradient({ text: "None", value: 1 });
+          break;
+        }
+      }
     }
   }, [status]);
 
@@ -146,7 +167,6 @@ const Admin = () => {
     );
   };
 
-  console.log(bgColor);
   return (
     <>
       <Nav />
@@ -483,24 +503,57 @@ const Admin = () => {
                 <div className="mt-6">
                   <span className="font-semibold">Card Background Color</span>
                   <Select
-                    options={["Linear (2 Colors)", "Linear (3 Colors)", "None"]}
+                    options={[
+                      { text: "Linear (2 Colors)", value: 2 },
+                      { text: "Linear (3 Colors)", value: 3 },
+                      { text: "None", value: 1 },
+                    ]}
                     value={gradient}
-                    onSelect={setGradient}
+                    onSelect={(option: {
+                      text: "Linear (2 Colors)" | "Linear (3 Colors)" | "None";
+                      value: 2 | 3 | 1;
+                    }) => {
+                      setGradient(option);
+                      update(
+                        {
+                          value: option.value,
+                          setting: Settings.gradient,
+                        },
+                        {
+                          onSuccess: () => {
+                            alert(
+                              AlertType.success,
+                              "Card background color gradient updated!"
+                            );
+                          },
+                        }
+                      );
+                    }}
                     label="Gradient"
                   />
 
+                  {/* FIRST COLOR */}
+
                   <div
-                    style={{ backgroundColor: cardBgColor }}
+                    style={{ backgroundColor: cardBgColor[0] }}
                     className="h-6 w-full my-2 rounded-lg"
                   ></div>
 
                   <TextInput
-                    value={cardBgColor}
+                    value={cardBgColor[0]}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setCardBgColor(e.target.value)
+                      setCardBgColor((prevState) => [
+                        e.target.value,
+                        prevState[1],
+                        prevState[2],
+                      ])
                     }
                     onClick={() =>
-                      setShowCardBgColorPicker(!showCardBgColorPicker)
+                      setShowCardBgColorPicker((prevState) => [
+                        !showCardBgColorPicker[0],
+                        prevState[1],
+                        prevState[2],
+                      ])
                     }
                     righticon={
                       <a
@@ -523,7 +576,7 @@ const Admin = () => {
                       >
                         <svg
                           className={`text-primary h-6 w-6 ${
-                            configData?.data.cardBgColor === cardBgColor
+                            configData?.data.cardBgColor[0] === cardBgColor[0]
                               ? "hidden"
                               : "block"
                           }`}
@@ -542,24 +595,226 @@ const Admin = () => {
                       </a>
                     }
                   />
-                  {configData?.data.cardBgColor !== cardBgColor ? (
+                  {configData?.data.cardBgColor[0] !== cardBgColor[0] ? (
                     <span className="text-xs text-grey-500">
                       Click &#10004; to update.
                     </span>
                   ) : (
                     <span className="text-xs text-grey-500">First color</span>
                   )}
-                  {showCardBgColorPicker && (
-                    <div className="absolute mt-2">
+                  {showCardBgColorPicker[0] && (
+                    <div className="absolute mt-2 z-10">
                       <TwitterPicker
                         onChangeComplete={(color) => {
-                          setCardBgColor(color.hex);
-                          setShowCardBgColorPicker(false);
+                          setCardBgColor((prevState) => [
+                            color.hex,
+                            prevState[1],
+                            prevState[2],
+                          ]);
+                          setShowCardBgColorPicker((prevState) => [
+                            false,
+                            prevState[1],
+                            prevState[2],
+                          ]);
                         }}
                       />
                     </div>
                   )}
+
+                  {/* SECOND COLOR */}
+
+                  {(gradient.text === "Linear (2 Colors)" ||
+                    gradient.text === "Linear (3 Colors)") && (
+                    <>
+                      <div
+                        style={{ backgroundColor: cardBgColor[1] }}
+                        className="h-6 w-full my-2 rounded-lg"
+                      ></div>
+
+                      <TextInput
+                        value={cardBgColor[1]}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setCardBgColor((prevState) => [
+                            prevState[0],
+                            e.target.value,
+                            prevState[2],
+                          ])
+                        }
+                        onClick={() =>
+                          setShowCardBgColorPicker((prevState) => [
+                            prevState[0],
+                            !showCardBgColorPicker[1],
+                            prevState[2],
+                          ])
+                        }
+                        righticon={
+                          <a
+                            onClick={() => {
+                              update(
+                                {
+                                  value: cardBgColor,
+                                  setting: Settings.cardBgColor,
+                                },
+                                {
+                                  onSuccess: () => {
+                                    alert(
+                                      AlertType.success,
+                                      "Card background color updated!"
+                                    );
+                                  },
+                                }
+                              );
+                            }}
+                          >
+                            <svg
+                              className={`text-primary h-6 w-6 ${
+                                configData?.data.cardBgColor[1] ===
+                                cardBgColor[1]
+                                  ? "hidden"
+                                  : "block"
+                              }`}
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </a>
+                        }
+                      />
+                      {configData?.data.cardBgColor[1] !== cardBgColor[1] ? (
+                        <span className="text-xs text-grey-500">
+                          Click &#10004; to update.
+                        </span>
+                      ) : (
+                        <span className="text-xs text-grey-500">
+                          Second color
+                        </span>
+                      )}
+                      {showCardBgColorPicker[1] && (
+                        <div className="absolute mt-2 z-10">
+                          <TwitterPicker
+                            onChangeComplete={(color) => {
+                              setCardBgColor((prevState) => [
+                                prevState[0],
+                                color.hex,
+                                prevState[2],
+                              ]);
+                              setShowCardBgColorPicker((prevState) => [
+                                prevState[0],
+                                false,
+                                prevState[1],
+                              ]);
+                            }}
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* THIRD COLOR */}
+
+                  {gradient.text === "Linear (3 Colors)" && (
+                    <>
+                      <div
+                        style={{ backgroundColor: cardBgColor[2] }}
+                        className="h-6 w-full my-2 rounded-lg"
+                      ></div>
+
+                      <TextInput
+                        value={cardBgColor[2]}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setCardBgColor((prevState) => [
+                            prevState[0],
+                            prevState[1],
+                            e.target.value,
+                          ])
+                        }
+                        onClick={() =>
+                          setShowCardBgColorPicker((prevState) => [
+                            prevState[0],
+                            prevState[1],
+                            !showCardBgColorPicker[2],
+                          ])
+                        }
+                        righticon={
+                          <a
+                            onClick={() => {
+                              update(
+                                {
+                                  value: cardBgColor,
+                                  setting: Settings.cardBgColor,
+                                },
+                                {
+                                  onSuccess: () => {
+                                    alert(
+                                      AlertType.success,
+                                      "Card background color updated!"
+                                    );
+                                  },
+                                }
+                              );
+                            }}
+                          >
+                            <svg
+                              className={`text-primary h-6 w-6 ${
+                                configData?.data.cardBgColor[2] ===
+                                cardBgColor[2]
+                                  ? "hidden"
+                                  : "block"
+                              }`}
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </a>
+                        }
+                      />
+                      {configData?.data.cardBgColor[2] !== cardBgColor[2] ? (
+                        <span className="text-xs text-grey-500">
+                          Click &#10004; to update.
+                        </span>
+                      ) : (
+                        <span className="text-xs text-grey-500">
+                          Third color
+                        </span>
+                      )}
+                      {showCardBgColorPicker[2] && (
+                        <div className="absolute mt-2 z-10">
+                          <TwitterPicker
+                            onChangeComplete={(color) => {
+                              setCardBgColor((prevState) => [
+                                prevState[0],
+                                prevState[1],
+                                color.hex,
+                              ]);
+                              setShowCardBgColorPicker((prevState) => [
+                                prevState[0],
+                                prevState[1],
+                                false,
+                              ]);
+                            }}
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
+
                 <div className="flex flex-col mt-6">
                   <label className="font-semibold">Card Logo Image</label>
                   <input type="file" className="my-6"></input>
