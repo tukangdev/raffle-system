@@ -14,7 +14,6 @@ const firebaseConfig = {
 // Initialize Firebase
 if (typeof window !== undefined && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
-  (window as any).firebase = firebase;
 }
 
 const storage = firebase.storage();
