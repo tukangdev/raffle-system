@@ -59,6 +59,12 @@ export const useNames = (pagination: {
   );
 };
 
+export const useRandomName = () => {
+  return useQuery(CACHE_KEYS.names, () =>
+    fetchData<FirebaseFirestore.DocumentData>("GET", "/api/raffle/names/random")
+  );
+};
+
 export const useCreateName = () => {
   const queryCache = useQueryCache();
 

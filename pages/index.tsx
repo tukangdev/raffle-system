@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import { useConfig } from "../queries";
+import { useConfig, useNames, useRandomName } from "../queries";
 import Button from "../components/button";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../lib/useWindowResize";
@@ -13,6 +13,8 @@ export default function Home() {
     error,
   } = useConfig();
 
+  const { data: nameData } = useRandomName();
+
   const { width, height } = useWindowSize();
 
   const [cursorInArea, setCursorInArea] = React.useState(false);
@@ -20,7 +22,6 @@ export default function Home() {
   const [isSelectCard, setIsSelectCard] = React.useState(false);
   const [flipCard, setFlipCard] = React.useState(false);
 
-  console.log(configData?.data);
   return (
     <>
       <Head>
@@ -40,7 +41,7 @@ export default function Home() {
           onMouseLeave={() => setCursorInArea(false)}
           style={{ transform: "translate(-50%,-50%)", top: "50%", left: "50%" }}
         >
-          <div className="absolute top-1/2 left-0 z-100 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute -bottom-36 left-1/2 z-100 transform -translate-x-1/2 -translate-y-1/2">
             <Button
               className={`border border-black  z-100 transition-all duration-500 ease-in-out ${
                 cursorInArea ? "opacity-100" : "opacity-0"
@@ -64,7 +65,6 @@ export default function Home() {
           </div>
           <div
             onClick={() => {
-              console.log("click");
               if (isShuffle && isSelectCard) {
                 setFlipCard(!flipCard);
               }
@@ -105,7 +105,7 @@ export default function Home() {
               }}
               className="absolute w-full h-full bg-white rounded-2xl flex justify-center items-center"
             >
-              Behind Card 1
+              {nameData?.data.name}
             </div>
           </div>
           <div
