@@ -8,7 +8,7 @@ import axios, { AxiosPromise, AxiosRequestConfig } from "axios";
 import { Config, Name } from "./types";
 import { Settings } from "./enum";
 
-const fetchData = <Result>(
+export const fetchData = <Result>(
   method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
   url: string,
   options?: AxiosRequestConfig
@@ -60,7 +60,9 @@ export const useNames = (pagination: {
 };
 
 export const useRandomName = () => {
-  return useQuery(CACHE_KEYS.names, () =>
+  const queryCache = useQueryCache();
+
+  return useQuery("", () =>
     fetchData<FirebaseFirestore.DocumentData>("GET", "/api/raffle/names/random")
   );
 };

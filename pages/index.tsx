@@ -1,9 +1,10 @@
 import React from "react";
 import Head from "next/head";
-import { useConfig, useNames, useRandomName } from "../queries";
+import { fetchData, useConfig, useNames, useRandomName } from "../queries";
 import Button from "../components/button";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../lib/useWindowResize";
+import axios from "axios";
 
 export default function Home() {
   const {
@@ -13,15 +14,23 @@ export default function Home() {
     error,
   } = useConfig();
 
-  const { data: nameData } = useRandomName();
-
   const { width, height } = useWindowSize();
 
   const [cursorInArea, setCursorInArea] = React.useState(false);
   const [isShuffle, setIsShuffle] = React.useState(false);
   const [isSelectCard, setIsSelectCard] = React.useState(false);
   const [flipCard, setFlipCard] = React.useState(false);
+  const [randomName, setRandomName] = React.useState("");
 
+  const getRandomName = async () => {
+    const nameData = await fetchData<FirebaseFirestore.DocumentData>(
+      "GET",
+      "/api/raffle/names/random"
+    );
+    if (nameData.data) {
+      setRandomName(nameData.data.name);
+    }
+  };
   return (
     <>
       <Head>
@@ -67,7 +76,8 @@ export default function Home() {
             )}
           </div>
           <div
-            onClick={() => {
+            onClick={async () => {
+              await getRandomName();
               if (isShuffle && isSelectCard) {
                 setFlipCard(!flipCard);
               }
@@ -108,7 +118,7 @@ export default function Home() {
               }}
               className="absolute w-full h-full bg-white rounded-2xl flex justify-center items-center"
             >
-              {nameData?.data.name}
+              {randomName}
             </div>
           </div>
           <div
