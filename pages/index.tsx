@@ -2,6 +2,8 @@ import React from "react";
 import Head from "next/head";
 import { useConfig } from "../queries";
 import Button from "../components/button";
+import Confetti from "react-confetti";
+import { useWindowSize } from "../lib/useWindowResize";
 
 export default function Home() {
   const {
@@ -10,6 +12,8 @@ export default function Home() {
     data: configData,
     error,
   } = useConfig();
+
+  const { width, height } = useWindowSize();
 
   const [cursorInArea, setCursorInArea] = React.useState(false);
   const [isShuffle, setIsShuffle] = React.useState(false);
@@ -23,6 +27,7 @@ export default function Home() {
         <title>Creative Network Raffle</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      {isSelectCard && flipCard && <Confetti width={width} height={height} />}
       <div
         className={`relative h-screen w-screen bg-no-repeat bg-cover bg-center transition-opacity duration-1000 ease-in ${
           configData ? "opacity-100" : "opacity-0"
@@ -42,18 +47,20 @@ export default function Home() {
               } hover:scale-110`}
               onClick={() => setIsShuffle(!isShuffle)}
             >
-              START RAFFLE
+              {isShuffle ? "STOP RAFFLE" : "START RAFFLE"}
             </Button>
-            <Button
-              className={`border border-black transform  z-100 transition-all duration-500 ease-in-out ${
-                cursorInArea ? "opacity-100" : "opacity-0"
-              } hover:scale-110`}
-              onClick={() => {
-                setIsSelectCard(!isSelectCard);
-              }}
-            >
-              PICK WINNER
-            </Button>
+            {isShuffle && (
+              <Button
+                className={`border border-black transform  z-100 transition-all duration-500 ease-in-out ${
+                  cursorInArea ? "opacity-100" : "opacity-0"
+                } hover:scale-110`}
+                onClick={() => {
+                  setIsSelectCard(!isSelectCard);
+                }}
+              >
+                {isSelectCard ? "BACK TO RAFFLE" : "PICK WINNER"}
+              </Button>
+            )}
           </div>
           <div
             onClick={() => {
