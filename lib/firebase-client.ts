@@ -12,8 +12,9 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 // Initialize Firebase
-if (!firebase.apps.length) {
+if (typeof window !== undefined && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
   (window as any).firebase = firebase;
 }
 
