@@ -1185,8 +1185,18 @@ module.exports = {
         cardToBack3: "cardToBack3 10s 1s ease infinite",
         cardToBack4: "cardToBack4 10s 1s ease infinite",
         cardToBack5: "cardToBack5 10s 1s ease infinite",
+        flipCard: "flipCard 1s ease-in-out forwards",
       },
       keyframes: {
+        flipCard: {
+          from: {
+            transform: "rotateY(0deg)  scale(1.5) translate(-35%, -34%)",
+          },
+          to: {
+            transform: "rotateY(180deg) scale(1.5) translate(34%, -34%);",
+            transformStyle: "preserve-3rd",
+          },
+        },
         cardToBack1: {
           //jump up
           "5%": {

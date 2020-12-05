@@ -13,7 +13,10 @@ export default function Home() {
 
   const [cursorInArea, setCursorInArea] = React.useState(false);
   const [isShuffle, setIsShuffle] = React.useState(false);
+  const [isSelectCard, setIsSelectCard] = React.useState(false);
+  const [flipCard, setFlipCard] = React.useState(false);
 
+  console.log(configData?.data);
   return (
     <>
       <Head>
@@ -32,94 +35,161 @@ export default function Home() {
           onMouseLeave={() => setCursorInArea(false)}
           style={{ transform: "translate(-50%,-50%)", top: "50%", left: "50%" }}
         >
-          <Button
-            className={`border border-black absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-100 transition-all duration-500 ease-in-out ${
-              cursorInArea ? "opacity-100" : "opacity-0"
-            } hover:scale-110`}
-            onClick={() => setIsShuffle(!isShuffle)}
-          >
-            START RAFFLE
-          </Button>
+          <div className="absolute top-1/2 left-0 z-100 transform -translate-x-1/2 -translate-y-1/2">
+            <Button
+              className={`border border-black  z-100 transition-all duration-500 ease-in-out ${
+                cursorInArea ? "opacity-100" : "opacity-0"
+              } hover:scale-110`}
+              onClick={() => setIsShuffle(!isShuffle)}
+            >
+              START RAFFLE
+            </Button>
+            <Button
+              className={`border border-black transform  z-100 transition-all duration-500 ease-in-out ${
+                cursorInArea ? "opacity-100" : "opacity-0"
+              } hover:scale-110`}
+              onClick={() => {
+                setIsSelectCard(!isSelectCard);
+              }}
+            >
+              PICK WINNER
+            </Button>
+          </div>
           <div
-            className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2   items-center transition-all transform duration-500 ease-in-out ${
+            onClick={() => {
+              console.log("click");
+              if (isShuffle && isSelectCard) {
+                setFlipCard(!flipCard);
+              }
+            }}
+            style={{ transformStyle: "preserve-3d" }}
+            className={`shadow-lg bg-transparent absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2   items-center transition-all transform duration-500 ease-in-out ${
               cursorInArea && !isShuffle
                 ? "-translate-x-64 -translate-y-32 -rotate-36"
-                : isShuffle
+                : isShuffle && !isSelectCard
                 ? "-translate-x-64 -translate-y-32 -rotate-0 animate-cardToBack1"
+                : isShuffle && isSelectCard && !flipCard
+                ? "-translate-x-1/2 -translate-y-1/2 scale-150 -rotate-0"
+                : isShuffle && isSelectCard && flipCard
+                ? "animate-flipCard"
                 : "-translate-x-1/2 -translate-y-1/2 rotate-0"
             } z-50`}
           >
-            <div className="relative h-9/10 w-9/10  border border-white rounded-xl">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                Card 1
-              </div>
+            <div
+              style={{
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+                MozBackfaceVisibility: "hidden",
+                backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+              }}
+              className="absolute w-full h-full rounded-2xl flex justify-center items-center"
+            >
+              <img
+                src={configData?.data.cardLogoImage}
+                className="h-32 w-32 rounded-full"
+              />
+            </div>
+            <div
+              style={{
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+                MozBackfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+              }}
+              className="absolute w-full h-full bg-white rounded-2xl flex justify-center items-center"
+            >
+              Behind Card 1
             </div>
           </div>
           <div
+            style={{
+              backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+            }}
             className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2  items-center transform transition-all duration-500 ease-in-out ${
               cursorInArea && !isShuffle
                 ? "-translate-x-48 -translate-y-40  -rotate-18"
-                : isShuffle
+                : isShuffle && !isSelectCard
                 ? "-translate-x-48 -translate-y-40 -rotate-0 animate-cardToBack2"
+                : isShuffle && isSelectCard
+                ? "-translate-x-48 -translate-y-40 -rotate-0"
                 : "-translate-x-1/2 -translate-y-1/2 rotate-0 "
             } z-40`}
           >
-            <div className="relative h-9/10 w-9/10  border border-white rounded-xl">
-              <div
-                className="absolute"
-                style={{
-                  transform: "translate(-50%,-50%)",
-                  top: "50%",
-                  left: "50%",
-                }}
-              >
-                Card 2
-              </div>
+            <div
+              className="absolute"
+              style={{
+                transform: "translate(-50%,-50%)",
+                top: "50%",
+                left: "50%",
+              }}
+            >
+              <img
+                src={configData?.data.cardLogoImage}
+                className="h-32 w-32 rounded-full"
+              />
             </div>
           </div>
           <div
+            style={{
+              backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+            }}
             className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2  items-center transition-all transform duration-500 ease-in-out ${
               cursorInArea && !isShuffle
                 ? "-translate-x-32 -translate-y-40 -rotate-9"
-                : isShuffle
+                : isShuffle && !isSelectCard
                 ? "-translate-x-32 -translate-y-48 -rotate-0 animate-cardToBack3"
+                : isShuffle && isSelectCard
+                ? "-translate-x-32 -translate-y-48 -rotate-0"
                 : "-translate-x-1/2 -translate-y-1/2 rotate-0"
             } z-30`}
           >
-            <div className="relative h-9/10 w-9/10  border border-white rounded-xl">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                Card 3
-              </div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <img
+                src={configData?.data.cardLogoImage}
+                className="h-32 w-32 rounded-full"
+              />
             </div>
           </div>
           <div
+            style={{
+              backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+            }}
             className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2   items-center transition-all transform duration-500 ease-in-out ${
               cursorInArea && !isShuffle
                 ? "-translate-x-16 -translate-y-40 -rotate-0"
-                : isShuffle
+                : isShuffle && !isSelectCard
                 ? "-translate-x-16 -translate-y-56 -rotate-0 animate-cardToBack4"
+                : isShuffle && isSelectCard
+                ? "-translate-x-16 -translate-y-56 -rotate-0"
                 : "-translate-x-1/2 -translate-y-1/2 rotate-0"
             } z-20`}
           >
-            <div className="relative h-9/10 w-9/10  border border-white rounded-xl">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                Card 4
-              </div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <img
+                src={configData?.data.cardLogoImage}
+                className="h-32 w-32 rounded-full"
+              />
             </div>
           </div>
           <div
+            style={{
+              backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+            }}
             className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2   items-center transition-all transform duration-500 ease-in-out ${
               cursorInArea && !isShuffle
                 ? "-translate-x-4 -translate-y-36 rotate-9"
-                : isShuffle
+                : isShuffle && !isSelectCard
                 ? "-translate-x-4 -translate-y-64 -rotate-0 animate-cardToBack5"
+                : isShuffle && isSelectCard
+                ? "-translate-x-4 -translate-y-64 -rotate-0"
                 : "-translate-x-1/2 -translate-y-1/2 rotate-0"
             } z-10`}
           >
-            <div className="relative h-9/10 w-9/10  border border-white rounded-xl">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                Card 5
-              </div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <img
+                src={configData?.data.cardLogoImage}
+                className="h-32 w-32 rounded-full"
+              />
             </div>
           </div>
         </div>
