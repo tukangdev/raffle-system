@@ -35,8 +35,11 @@ export default function Home() {
         }`}
         style={{ backgroundImage: `url(${configData?.data.bgImage})` }}
       >
+        <p className="bg-white p-4 text-center sm:hidden">
+          To run this raffle, you must at least be on a tablet.
+        </p>
         <div
-          className="absolute mx-auto max-w-lg w-full h-100"
+          className="absolute hidden sm:block mx-auto max-w-lg w-full h-100"
           onMouseEnter={() => setCursorInArea(true)}
           onMouseLeave={() => setCursorInArea(false)}
           style={{ transform: "translate(-50%,-50%)", top: "50%", left: "50%" }}
