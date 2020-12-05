@@ -1144,6 +1144,18 @@ module.exports = {
         96: "24rem",
         36: "9rem",
       },
+      zIndex: {
+        0: 0,
+        10: 10,
+        20: 20,
+        30: 30,
+        40: 40,
+        50: 50,
+        25: 25,
+        50: 50,
+        75: 75,
+        100: 100,
+      },
       rotate: {
         "-180": "-180deg",
         "-90": "-90deg",
@@ -1166,6 +1178,385 @@ module.exports = {
       borderRadius: {
         "2xl": "2rem",
         xl: "1.5rem",
+      },
+      animation: {
+        cardToBack1: "cardToBack1 10s 1s ease infinite",
+        cardToBack2: "cardToBack2 10s 1s ease infinite",
+        cardToBack3: "cardToBack3 10s 1s ease infinite",
+        cardToBack4: "cardToBack4 10s 1s ease infinite",
+        cardToBack5: "cardToBack5 10s 1s ease infinite",
+      },
+      keyframes: {
+        cardToBack1: {
+          //jump up
+          "5%": {
+            left: "35rem",
+            top: "-18rem",
+            zIndex: 60,
+          },
+          //5th
+          "10%": {
+            left: "40rem",
+            top: "7rem",
+            zIndex: 10,
+          },
+          //4th
+          "15%": {
+            left: "37rem",
+            top: "9rem",
+            zIndex: 20,
+          },
+          //3rd
+          "20%": {
+            left: "33rem",
+            top: "11rem",
+            zIndex: 30,
+          },
+          //2nd
+          "25%": {
+            left: "29rem",
+            top: "13rem",
+            zIndex: 40,
+          },
+          //1st
+          "30%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 50,
+          },
+          //jump up
+          "35%": {
+            left: "35rem",
+            top: "-18rem",
+            zIndex: 60,
+          },
+          //5th
+          "40%": {
+            left: "40rem",
+            top: "7rem",
+            zIndex: 10,
+          },
+          //4th
+          "45%": {
+            left: "37rem",
+            top: "9rem",
+            zIndex: 20,
+          },
+          //3rd
+          "50%": {
+            left: "33rem",
+            top: "11rem",
+            zIndex: 30,
+          },
+          //2nd
+          "55%": {
+            left: "29rem",
+            top: "13rem",
+            zIndex: 40,
+          },
+          //1st
+          "60%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 50,
+          },
+        },
+        cardToBack2: {
+          // 1st
+          "5%": {
+            left: "21rem",
+            top: "17rem",
+            zIndex: 50,
+          },
+          // jump
+          "10%": {
+            left: "31rem",
+            top: "-16rem",
+            zIndex: 60,
+          },
+          // 5th
+          "15%": {
+            left: "36rem",
+            top: "9rem",
+            zIndex: 10,
+          },
+          // 4th
+          "20%": {
+            left: "33rem",
+            top: "11rem",
+            zIndex: 20,
+          },
+          // 3rd
+          "25%": {
+            left: "29rem",
+            top: "13rem",
+            zIndex: 30,
+          },
+          // 2nd
+          "30%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 40,
+          },
+          // 1st
+          "35%": {
+            left: "21rem",
+            top: "17rem",
+            zIndex: 50,
+          },
+          // jump
+          "40%": {
+            left: "31rem",
+            top: "-16rem",
+            zIndex: 60,
+          },
+          // 5th
+          "45%": {
+            left: "36rem",
+            top: "9rem",
+            zIndex: 10,
+          },
+          // 4th
+          "50%": {
+            left: "33rem",
+            top: "11rem",
+            zIndex: 20,
+          },
+          // 3rd
+          "55%": {
+            left: "29rem",
+            top: "13rem",
+            zIndex: 30,
+          },
+          // 2nd
+          "60%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 40,
+          },
+        },
+        cardToBack3: {
+          // 2nd
+          "5%": {
+            left: "21rem",
+            top: "17rem",
+            zIndex: 40,
+          },
+          // 1st
+          "10%": {
+            left: "17rem",
+            top: "19rem",
+            zIndex: 50,
+          },
+          // jump
+          "15%": {
+            left: "27rem",
+            top: "-14rem",
+            zIndex: 60,
+          },
+          // 5th
+          "20%": {
+            left: "32rem",
+            top: "11rem",
+            zIndex: 10,
+          },
+          // 4th
+          "25%": {
+            left: "29rem",
+            top: "13rem",
+            zIndex: 20,
+          },
+          // 3rd
+          "30%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 30,
+          },
+          // 2nd
+          "35%": {
+            left: "21rem",
+            top: "17rem",
+            zIndex: 40,
+          },
+          // 1st
+          "40%": {
+            left: "17rem",
+            top: "19rem",
+            zIndex: 50,
+          },
+          // jump
+          "45%": {
+            left: "27rem",
+            top: "-14rem",
+            zIndex: 60,
+          },
+          // 5th
+          "50%": {
+            left: "32rem",
+            top: "11rem",
+            zIndex: 10,
+          },
+          // 4th
+          "55%": {
+            left: "29rem",
+            top: "13rem",
+            zIndex: 20,
+          },
+          // 3rd
+          "60%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 30,
+          },
+        },
+        cardToBack4: {
+          // 3rd
+          "5%": {
+            left: "21rem",
+            top: "17rem",
+            zIndex: 30,
+          },
+          // 2nd
+          "10%": {
+            left: "17rem",
+            top: "19rem",
+            zIndex: 40,
+          },
+          // 1st
+          "15%": {
+            left: "13rem",
+            top: "21rem",
+            zIndex: 50,
+          },
+          // jump
+          "20%": {
+            left: "23rem",
+            top: "-12rem",
+            zIndex: 60,
+          },
+          // 5th
+          "25%": {
+            left: "28rem",
+            top: "13rem",
+            zIndex: 10,
+          },
+          // 4th
+          "30%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 20,
+          },
+          // 3rd
+          "35%": {
+            left: "21rem",
+            top: "17rem",
+            zIndex: 30,
+          },
+          // 2nd
+          "40%": {
+            left: "17rem",
+            top: "19rem",
+            zIndex: 40,
+          },
+          // 1st
+          "45%": {
+            left: "13rem",
+            top: "21rem",
+            zIndex: 50,
+          },
+          // jump
+          "50%": {
+            left: "23rem",
+            top: "-12rem",
+            zIndex: 60,
+          },
+          // 5th
+          "55%": {
+            left: "28rem",
+            top: "13rem",
+            zIndex: 10,
+          },
+          // 4th
+          "60%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 20,
+          },
+        },
+        cardToBack5: {
+          // 4th
+          "5%": {
+            left: "22rem",
+            top: "17rem",
+            zIndex: 20,
+          },
+          // 3rd
+          "10%": {
+            left: "18rem",
+            top: "19rem",
+            zIndex: 30,
+          },
+          // 2nd
+          "15%": {
+            left: "14rem",
+            top: "21rem",
+            zIndex: 40,
+          },
+          // 1st
+          "20%": {
+            left: "10rem",
+            top: "23rem",
+            zIndex: 50,
+          },
+          // jump
+          "25%": {
+            left: "20rem",
+            top: "-10rem",
+            zIndex: 60,
+          },
+          // 5th
+          "30%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 10,
+          },
+          // 4th
+          "35%": {
+            left: "22rem",
+            top: "17rem",
+            zIndex: 20,
+          },
+          // 3rd
+          "40%": {
+            left: "18rem",
+            top: "19rem",
+            zIndex: 30,
+          },
+          // 2nd
+          "45%": {
+            left: "14rem",
+            top: "21rem",
+            zIndex: 40,
+          },
+          // 1st
+          "50%": {
+            left: "10rem",
+            top: "23rem",
+            zIndex: 50,
+          },
+          // jump
+          "55%": {
+            left: "20rem",
+            top: "-10rem",
+            zIndex: 60,
+          },
+          // 5th
+          "60%": {
+            left: "25rem",
+            top: "15rem",
+            zIndex: 10,
+          },
+        },
       },
     },
   },
