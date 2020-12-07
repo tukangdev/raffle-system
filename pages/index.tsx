@@ -5,6 +5,7 @@ import Button from "../components/button";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../lib/useWindowResize";
 import axios from "axios";
+import { timeout } from "../lib/helpers";
 
 export default function Home() {
   const {
@@ -22,6 +23,21 @@ export default function Home() {
   const [flipCard, setFlipCard] = React.useState(false);
   const [randomName, setRandomName] = React.useState("");
 
+  const startInterval = async () => {
+    setIsShuffle(true);
+    await timeout(3000);
+    setIsSelectCard(true);
+    await getRandomName();
+    await timeout(1000);
+    setFlipCard(true);
+    await timeout(3000);
+    setFlipCard(false);
+    await timeout(1000);
+    setIsSelectCard(false);
+    await timeout(1000);
+    setIsShuffle(false);
+  };
+
   const getRandomName = async () => {
     const nameData = await fetchData<FirebaseFirestore.DocumentData>(
       "GET",
@@ -31,6 +47,22 @@ export default function Home() {
       setRandomName(nameData.data.name);
     }
   };
+
+  const getCardBackgroundColors = () => {
+    switch (configData?.data.gradient) {
+      case 3: {
+        return `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`;
+      }
+      case 2: {
+        return `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]})`;
+      }
+      default: {
+        return `${configData?.data.cardBgColor[0]}`;
+      }
+    }
+  };
+
+  console.log(configData);
   return (
     <>
       <Head>
@@ -53,35 +85,19 @@ export default function Home() {
           onMouseLeave={() => setCursorInArea(false)}
           style={{ transform: "translate(-50%,-50%)", top: "50%", left: "50%" }}
         >
-          <div className="absolute -bottom-36 left-1/2 z-100 transform -translate-x-1/2 -translate-y-1/2">
-            <Button
-              className={`border border-black  z-100 transition-all duration-500 ease-in-out ${
-                cursorInArea ? "opacity-100" : "opacity-0"
-              } hover:scale-110`}
-              onClick={() => setIsShuffle(!isShuffle)}
-            >
-              {isShuffle ? "STOP RAFFLE" : "START RAFFLE"}
-            </Button>
-            {isShuffle && (
+          {!isShuffle && (
+            <div className="absolute -bottom-36 left-1/2 z-100 transform -translate-x-1/2 -translate-y-1/2">
               <Button
-                className={`border border-black transform  z-100 transition-all duration-500 ease-in-out ${
+                className={`border border-black  z-100 transition-all duration-500 ease-in-out ${
                   cursorInArea ? "opacity-100" : "opacity-0"
                 } hover:scale-110`}
-                onClick={() => {
-                  setIsSelectCard(!isSelectCard);
-                }}
+                onClick={async () => await startInterval()}
               >
-                {isSelectCard ? "BACK TO RAFFLE" : "PICK WINNER"}
+                START RAFFLE
               </Button>
-            )}
-          </div>
+            </div>
+          )}
           <div
-            onClick={async () => {
-              await getRandomName();
-              if (isShuffle && isSelectCard) {
-                setFlipCard(!flipCard);
-              }
-            }}
             style={{ transformStyle: "preserve-3d" }}
             className={`shadow-lg bg-transparent absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2   items-center transition-all transform duration-500 ease-in-out ${
               cursorInArea && !isShuffle
@@ -100,7 +116,7 @@ export default function Home() {
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 MozBackfaceVisibility: "hidden",
-                backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+                background: getCardBackgroundColors(),
               }}
               className="absolute w-full h-full rounded-2xl flex justify-center items-center"
             >
@@ -123,7 +139,7 @@ export default function Home() {
           </div>
           <div
             style={{
-              backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+              background: getCardBackgroundColors(),
             }}
             className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2  items-center transform transition-all duration-500 ease-in-out ${
               cursorInArea && !isShuffle
@@ -151,7 +167,7 @@ export default function Home() {
           </div>
           <div
             style={{
-              backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+              background: getCardBackgroundColors(),
             }}
             className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2  items-center transition-all transform duration-500 ease-in-out ${
               cursorInArea && !isShuffle
@@ -172,7 +188,7 @@ export default function Home() {
           </div>
           <div
             style={{
-              backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+              background: getCardBackgroundColors(),
             }}
             className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2   items-center transition-all transform duration-500 ease-in-out ${
               cursorInArea && !isShuffle
@@ -193,7 +209,7 @@ export default function Home() {
           </div>
           <div
             style={{
-              backgroundImage: `linear-gradient(to bottom right, ${configData?.data.cardBgColor[0]}, ${configData?.data.cardBgColor[1]}, ${configData?.data.cardBgColor[2]})`,
+              background: getCardBackgroundColors(),
             }}
             className={`bg-primary shadow-lg absolute w-64 h-96 rounded-2xl flex justify-center top-1/2 left-1/2   items-center transition-all transform duration-500 ease-in-out ${
               cursorInArea && !isShuffle
