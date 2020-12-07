@@ -25,6 +25,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         : namesRef.orderBy("name").limit(parseInt(perPage as string));
       // snapshot of all documentd
       const snapshot = await docs.get();
+
+      if (snapshot.empty) {
+        res.status(200);
+        return res.json({
+          total: 0,
+          items: [],
+        });
+      }
       const snapshotWithLimit = await docsWithLimit.get();
 
       const veryFirstAnchorData = snapshot.docs[0].data();
@@ -139,6 +147,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       console.error(err);
       res.status(500);
       res.statusMessage = err;
+      res.json({
+        total: 0,
+        items: [],
+      });
     }
   }
 

@@ -6,8 +6,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const namesRef = firebase.firestore.collection("names");
       const snapshot = await namesRef.get();
-      let allNames: any[] = [];
-      snapshot.forEach((doc) => allNames.push(doc.data()));
+      let allNames: FirebaseFirestore.DocumentData[] = [];
+      snapshot.forEach((doc) => allNames.push({ ...doc.data(), id: doc.id }));
 
       const randomName = allNames[Math.floor(Math.random() * allNames.length)];
 

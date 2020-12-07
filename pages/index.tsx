@@ -21,16 +21,22 @@ export default function Home() {
   const [isShuffle, setIsShuffle] = React.useState(false);
   const [isSelectCard, setIsSelectCard] = React.useState(false);
   const [flipCard, setFlipCard] = React.useState(false);
-  const [randomName, setRandomName] = React.useState("");
+  const [
+    randomName,
+    setRandomName,
+  ] = React.useState<FirebaseFirestore.DocumentData>();
+
+  React.useEffect(() => {
+    getRandomName();
+  }, []);
 
   const startInterval = async () => {
     setIsShuffle(true);
-    await timeout(3000);
+    await timeout(configData?.data.shuffleInterval || 3000);
     setIsSelectCard(true);
-    await getRandomName();
     await timeout(1000);
     setFlipCard(true);
-    await timeout(3000);
+    await timeout(configData?.data.cardRevealInterval || 3000);
     setFlipCard(false);
     await timeout(1000);
     setIsSelectCard(false);
@@ -44,7 +50,16 @@ export default function Home() {
       "/api/raffle/names/random"
     );
     if (nameData.data) {
-      setRandomName(nameData.data.name);
+      setRandomName(nameData);
+    }
+  };
+
+  const removeSelectedName = async (r: FirebaseFirestore.DocumentData) => {
+    if (r) {
+      await fetchData<FirebaseFirestore.DocumentData>(
+        "DELETE",
+        `/api/raffle/names/${r.data.id}`
+      );
     }
   };
 
@@ -62,7 +77,6 @@ export default function Home() {
     }
   };
 
-  console.log(configData);
   return (
     <>
       <Head>
@@ -91,7 +105,10 @@ export default function Home() {
                 className={`border border-black  z-100 transition-all duration-500 ease-in-out ${
                   cursorInArea ? "opacity-100" : "opacity-0"
                 } hover:scale-110`}
-                onClick={async () => await startInterval()}
+                onClick={async () => {
+                  await startInterval();
+                  randomName && (await removeSelectedName(randomName));
+                }}
               >
                 START RAFFLE
               </Button>
@@ -134,7 +151,7 @@ export default function Home() {
               }}
               className="absolute w-full h-full bg-white rounded-2xl flex justify-center items-center"
             >
-              {randomName}
+              {randomName?.data.name}
             </div>
           </div>
           <div

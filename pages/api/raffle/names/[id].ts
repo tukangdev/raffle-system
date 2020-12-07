@@ -49,4 +49,19 @@ export default async (
       res.statusMessage = err;
     }
   }
+
+  if (req.method === "DELETE") {
+    try {
+      const { id } = req.query;
+      await namesCollection.doc(id as string).delete();
+      res.status(200);
+      res.json({
+        status: 1,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500);
+      res.statusMessage = err;
+    }
+  }
 };

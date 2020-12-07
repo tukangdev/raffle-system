@@ -25,6 +25,7 @@ import { storage } from "../../lib/firebase-client";
 import firebaseAdmin from "../../lib/firebase";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import nookies from "nookies";
+import RangeSlider from "../../components/range-slider";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   try {
@@ -100,6 +101,8 @@ const Admin = (
     text: "Linear (2 Colors)" | "Linear (3 Colors)" | "None";
     value: 2 | 3 | 1;
   }>({ text: "None", value: 1 });
+  const [shuffleInterval, setShuffleInterval] = React.useState([3000]);
+  const [cardRevealInterval, setCardRevealInterval] = React.useState([3000]);
   const [bgImageUploadProgress, setBgImageUploadProgress] = React.useState(0);
   const [cardLogoUploadProgress, setCardLogoUploadProgress] = React.useState(0);
   const cardLogoUploadRef = React.useRef<HTMLInputElement>(null);
@@ -122,7 +125,11 @@ const Admin = (
 
   // Only runs on first load. Status dictates that
   React.useEffect(() => {
-    if (resolvedData && status === "success") {
+    if (
+      resolvedData &&
+      resolvedData.data.items.length &&
+      status === "success"
+    ) {
       setAnchors([
         resolvedData.data.items[0].id,
         resolvedData.data.items[resolvedData.data.items.length - 1].id,
@@ -234,7 +241,6 @@ const Admin = (
             .child(`${setting}-${file.name}-${file.lastModified}`)
             .getDownloadURL()
             .then((fireBaseUrl) => {
-              console.log(fireBaseUrl);
               update(
                 {
                   value: fireBaseUrl,
@@ -427,35 +433,44 @@ const Admin = (
               <Card wrapperclass="mt-4 px-0 py-0">
                 <ul>
                   {resolvedData ? (
-                    resolvedData.data.items.map(
-                      ({ name, id }: { name: string; id: string }) => (
-                        <li key={id} className="py-3 px-6 hover:bg-red-100">
-                          <CheckboxInput
-                            value={id}
-                            checked={selectList.includes(id)}
-                            onChange={(
-                              event: React.ChangeEvent<HTMLInputElement>
-                            ) => {
-                              if (event.target.checked) {
-                                selectList.includes(event.target.value)
-                                  ? null
-                                  : setSelectList([
-                                      ...selectList,
-                                      event.target.value,
-                                    ]);
-                              } else {
-                                setSelectList(
-                                  selectList.filter(
-                                    (id) => id !== event.target.value
-                                  )
-                                );
-                              }
-                            }}
-                            wrapperclass="inline-block float-left mr-4"
-                          />
-                          {name}
-                        </li>
+                    resolvedData.data.items.length ? (
+                      resolvedData.data.items.map(
+                        ({ name, id }: { name: string; id: string }) => (
+                          <li key={id} className="py-3 px-6 hover:bg-red-100">
+                            <CheckboxInput
+                              value={id}
+                              checked={selectList.includes(id)}
+                              onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                              ) => {
+                                if (event.target.checked) {
+                                  selectList.includes(event.target.value)
+                                    ? null
+                                    : setSelectList([
+                                        ...selectList,
+                                        event.target.value,
+                                      ]);
+                                } else {
+                                  setSelectList(
+                                    selectList.filter(
+                                      (id) => id !== event.target.value
+                                    )
+                                  );
+                                }
+                              }}
+                              wrapperclass="inline-block float-left mr-4"
+                            />
+                            {name}
+                          </li>
+                        )
                       )
+                    ) : (
+                      <li className="py-3 px-6 hover:bg-red-100">
+                        <span>
+                          There is no names :( Start adding or import a list of
+                          names via Import CSV!
+                        </span>
+                      </li>
                     )
                   ) : (
                     <ul>
@@ -992,6 +1007,72 @@ const Admin = (
                       strokeColor="#ae2c22"
                     />
                   )}
+                </div>
+              </div>
+              <div className="w-full lg:pl-2">
+                <div className="mt-6">
+                  <span className="font-semibold">Intervals</span>
+                  <br />
+                  <div className="mb-6">
+                    <p className="mb-6">Shuffle interval (ms)</p>
+                    <RangeSlider
+                      values={shuffleInterval}
+                      onChange={setShuffleInterval}
+                    />
+                    {configData?.data.shuffleInterval !==
+                      shuffleInterval[0] && (
+                      <Button
+                        onClick={() => {
+                          update(
+                            {
+                              value: shuffleInterval[0],
+                              setting: Settings.shuffleInterval,
+                            },
+                            {
+                              onSuccess: () => {
+                                alert(
+                                  AlertType.success,
+                                  "Shuffle interval updated!"
+                                );
+                              },
+                            }
+                          );
+                        }}
+                      >
+                        Update interval
+                      </Button>
+                    )}
+                  </div>
+                  <div>
+                    <p className="mb-6">Name reveal interval (ms)</p>
+                    <RangeSlider
+                      values={cardRevealInterval}
+                      onChange={setCardRevealInterval}
+                    />
+                    {configData?.data.cardRevealInterval !==
+                      cardRevealInterval[0] && (
+                      <Button
+                        onClick={() => {
+                          update(
+                            {
+                              value: cardRevealInterval[0],
+                              setting: Settings.cardRevealInterval,
+                            },
+                            {
+                              onSuccess: () => {
+                                alert(
+                                  AlertType.success,
+                                  "Card reveal interval updated!"
+                                );
+                              },
+                            }
+                          );
+                        }}
+                      >
+                        Update interval
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

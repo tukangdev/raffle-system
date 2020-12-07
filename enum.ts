@@ -4,6 +4,8 @@ export enum Settings {
   cardBgColor = "cardBgColor",
   cardLogoImage = "cardLogoImage",
   gradient = "gradient",
+  shuffleInterval = "shuffleInterval",
+  cardRevealInterval = "cardRevealInterval",
 }
 
 export enum AlertType {
