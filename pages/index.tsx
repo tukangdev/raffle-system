@@ -28,7 +28,7 @@ export default function Home() {
 
   React.useEffect(() => {
     getRandomName();
-  }, []);
+  }, [isShuffle]);
 
   const startInterval = async () => {
     setIsShuffle(true);
@@ -40,6 +40,7 @@ export default function Home() {
     setFlipCard(false);
     await timeout(1000);
     setIsSelectCard(false);
+    randomName && (await removeSelectedName(randomName));
     await timeout(1000);
     setIsShuffle(false);
   };
@@ -107,7 +108,6 @@ export default function Home() {
                 } hover:scale-110`}
                 onClick={async () => {
                   await startInterval();
-                  randomName && (await removeSelectedName(randomName));
                 }}
               >
                 START RAFFLE
