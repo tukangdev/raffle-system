@@ -110,7 +110,7 @@ export default function Home() {
                   await startInterval();
                 }}
               >
-                START RAFFLE
+                PICK A WINNER
               </Button>
             </div>
           )}

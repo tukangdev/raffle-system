@@ -21,6 +21,7 @@ try {
 }
 
 export default {
+  admin,
   firestore: admin.firestore(),
   auth: admin.auth(),
 };

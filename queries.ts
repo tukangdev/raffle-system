@@ -108,6 +108,52 @@ export const useDeleteName = () => {
   );
 };
 
+export const useAllNames = () => {
+  const queryCache = useQueryCache();
+  return useQuery(
+    "",
+    () =>
+      fetchData<{ items: Name[]; total: number }>(
+        "GET",
+        "/api/raffle/names/all"
+      ),
+    {
+      refetchOnMount: "always",
+      retry: false,
+      onSuccess: (response) => {
+        if (response && response.data.items) {
+          response.data.items.map(
+            ({ id, name }: { id: string; name: string }) =>
+              queryCache.setQueryData([CACHE_KEYS.names, id], name)
+          );
+        }
+      },
+    }
+  );
+};
+
+export const useResetNames = () => {
+  const queryCache = useQueryCache();
+
+  return useMutation(
+    ({ ids }: { ids: string[] }) =>
+      fetchData("PUT", `/api/raffle/names/reset`, {
+        data: {
+          ids,
+        },
+      }),
+    {
+      onSuccess: (data, param) => {
+        queryCache.invalidateQueries(CACHE_KEYS.namesPaginate);
+        queryCache.invalidateQueries(CACHE_KEYS.names);
+        param.ids.map((id) =>
+          queryCache.setQueryData([CACHE_KEYS.names, id], data)
+        );
+      },
+    }
+  );
+};
+
 export const useConfig = () => {
   // const queryCache = useQueryCache();
 
