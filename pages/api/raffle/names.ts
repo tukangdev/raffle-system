@@ -158,45 +158,68 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     const { names } = req.body;
 
-    if (names.length && names.length > 1) {
-      const batch = firebase.firestore.batch();
+    if (names.length && names.length > 500) {
+      let chunksArray = [];
+      const chunkSize = 500;
 
-      names.forEach((name: string) => {
-        batch.set(namesRef.doc(), {
-          name,
-          isWinner: false,
-          createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
-        });
-      });
-
-      await batch.commit();
-
-      res.status(200).send({});
-    } else {
-      const name = names.length ? names[0] : names;
-      // IF REQUEST IS JSON
-      if (!name) {
-        res.status(400);
-        res.statusMessage = "Name is missing!";
+      while (names.length > 0) {
+        chunksArray.push(names.splice(0, chunkSize));
       }
 
-      try {
-        const result = await namesRef.add({
-          name,
-          isWinner: false,
-          createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+      chunksArray.forEach(async (array: string[]) => {
+        const batch = firebase.firestore.batch();
+        array.forEach((name: string) => {
+          batch.set(namesRef.doc(), {
+            name,
+            isWinner: false,
+            createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+          });
         });
 
-        const doc = await namesRef.doc(result.id).get();
+        await batch.commit();
+      });
+    } else {
+      if (names.length && names.length > 1) {
+        const batch = firebase.firestore.batch();
 
-        res.status(200);
-        res.json({ data: { id: doc.id, ...doc.data() } });
-      } catch (err) {
-        console.error(err);
-        res.status(500);
-        res.statusMessage = err;
+        names.forEach((name: string) => {
+          batch.set(namesRef.doc(), {
+            name,
+            isWinner: false,
+            createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+          });
+        });
+
+        await batch.commit();
+
+        res.status(200).send({});
+      } else {
+        const name = names.length ? names[0] : names;
+        // IF REQUEST IS JSON
+        if (!name) {
+          res.status(400);
+          res.statusMessage = "Name is missing!";
+        }
+
+        try {
+          const result = await namesRef.add({
+            name,
+            isWinner: false,
+            createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+          });
+
+          const doc = await namesRef.doc(result.id).get();
+
+          res.status(200);
+          res.json({ data: { id: doc.id, ...doc.data() } });
+        } catch (err) {
+          console.error(err);
+          res.status(500);
+          res.statusMessage = err;
+        }
       }
     }
   }
