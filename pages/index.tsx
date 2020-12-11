@@ -11,10 +11,42 @@ import {
 import Button from "../components/button";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../lib/useWindowResize";
-import axios from "axios";
+import firebaseAdmin from "../lib/firebase";
 import { timeout } from "../lib/helpers";
-import random from "./api/raffle/names/random";
 import { useQueryCache } from "react-query";
+import { GetServerSidePropsContext } from "next";
+import nookies from "nookies";
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  try {
+    const cookies = nookies.get(ctx);
+    const token = await firebaseAdmin.auth.verifyIdToken(cookies.token);
+    const { uid, email } = token;
+
+    // the user is authenticated!
+    // FETCH STUFF HERE
+
+    return {
+      props: { message: `Your email is ${email} and your UID is ${uid}.` },
+    };
+  } catch (err) {
+    // either the `token` cookie didn't exist
+    // or token verification failed
+    // either way: redirect to the login page
+    // either the `token` cookie didn't exist
+    // or token verification failed
+    // either way: redirect to the login page
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/admin/login",
+      },
+      // `as never` is required for correct type inference
+      // by InferGetServerSidePropsType below
+      props: {} as never,
+    };
+  }
+};
 
 export default function Home() {
   const queryCache = useQueryCache();
@@ -36,9 +68,7 @@ export default function Home() {
     setRandomName,
   ] = React.useState<FirebaseFirestore.DocumentData>();
 
-  React.useEffect(() => {
-    console.log(randomName, isSelectCard);
-  }, [randomName, isSelectCard]);
+  React.useEffect(() => {}, [randomName, isSelectCard]);
 
   const startInterval = () =>
     new Promise(async (resolve) => {
