@@ -1,13 +1,23 @@
 import React from "react";
 import Head from "next/head";
-import { fetchData, useConfig, useNames, useRandomName } from "../queries";
+import {
+  fetchData,
+  getRandomName,
+  updateWinnerName,
+  useConfig,
+  useNames,
+  useRandomName,
+} from "../queries";
 import Button from "../components/button";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../lib/useWindowResize";
 import axios from "axios";
 import { timeout } from "../lib/helpers";
+import random from "./api/raffle/names/random";
+import { useQueryCache } from "react-query";
 
 export default function Home() {
+  const queryCache = useQueryCache();
   const {
     isFetching: isLoadingConfig,
     isError: isErrorConfig,
@@ -27,42 +37,25 @@ export default function Home() {
   ] = React.useState<FirebaseFirestore.DocumentData>();
 
   React.useEffect(() => {
-    getRandomName();
-  }, [isShuffle]);
+    console.log(randomName, isSelectCard);
+  }, [randomName, isSelectCard]);
 
-  const startInterval = async () => {
-    setIsShuffle(true);
-    await timeout(configData?.data.shuffleInterval || 3000);
-    setIsSelectCard(true);
-    await timeout(1000);
-    setFlipCard(true);
-    await timeout(configData?.data.cardRevealInterval || 3000);
-    setFlipCard(false);
-    await timeout(1000);
-    setIsSelectCard(false);
-    randomName && (await removeSelectedName(randomName));
-    await timeout(1000);
-    setIsShuffle(false);
-  };
-
-  const getRandomName = async () => {
-    const nameData = await fetchData<FirebaseFirestore.DocumentData>(
-      "GET",
-      "/api/raffle/names/random"
-    );
-    if (nameData.data) {
-      setRandomName(nameData);
-    }
-  };
-
-  const removeSelectedName = async (r: FirebaseFirestore.DocumentData) => {
-    if (r) {
-      await fetchData<FirebaseFirestore.DocumentData>(
-        "DELETE",
-        `/api/raffle/names/${r.data.id}`
-      );
-    }
-  };
+  const startInterval = () =>
+    new Promise(async (resolve) => {
+      setIsShuffle(true);
+      await timeout(configData?.data.shuffleInterval || 3000);
+      setIsSelectCard(true);
+      await timeout(1000);
+      setFlipCard(true);
+      await timeout(configData?.data.cardRevealInterval || 3000);
+      setFlipCard(false);
+      await timeout(1000);
+      setIsSelectCard(false);
+      // randomName && (await updateWinnerName(randomName));
+      await timeout(1000);
+      setIsShuffle(false);
+      resolve();
+    });
 
   const getCardBackgroundColors = () => {
     switch (configData?.data.gradient) {
@@ -107,7 +100,12 @@ export default function Home() {
                   cursorInArea ? "opacity-100" : "opacity-0"
                 } hover:scale-110`}
                 onClick={async () => {
+                  const randomNameData = await getRandomName();
+                  setRandomName(randomNameData);
                   await startInterval();
+                  randomNameData && (await updateWinnerName(randomNameData));
+                  queryCache.invalidateQueries("names");
+                  queryCache.invalidateQueries("namesPaginate");
                 }}
               >
                 PICK A WINNER

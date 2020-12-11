@@ -1,4 +1,5 @@
 import {
+  queryCache,
   useMutation,
   usePaginatedQuery,
   useQuery,
@@ -152,6 +153,34 @@ export const useResetNames = () => {
       },
     }
   );
+};
+
+export const getRandomName = async () => {
+  const nameData = await fetchData<FirebaseFirestore.DocumentData>(
+    "GET",
+    "/api/raffle/names/random"
+  );
+  if (nameData.data) {
+    return nameData;
+  }
+};
+
+export const updateWinnerName = async (r: FirebaseFirestore.DocumentData) => {
+  if (r) {
+    try {
+      await fetchData<FirebaseFirestore.DocumentData>(
+        "PUT",
+        `/api/raffle/names/${r.data.id}`,
+        {
+          data: {
+            isWinner: true,
+          },
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
 };
 
 export const useConfig = () => {

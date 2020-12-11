@@ -147,12 +147,6 @@ const Admin = (
       ]);
     }
 
-    if (allNamesData) {
-      setWinnersList(
-        allNamesData.data.items.filter(({ isWinner }) => isWinner)
-      );
-    }
-
     if (configData) {
       setBgColor(configData.data.bgColor);
       setBgImage(configData.data.bgImage);
@@ -175,6 +169,14 @@ const Admin = (
       }
     }
   }, [status, allNamesStatus]);
+
+  React.useEffect(() => {
+    if (allNamesData) {
+      setWinnersList(
+        allNamesData.data.items.filter(({ isWinner }) => isWinner)
+      );
+    }
+  }, [allNamesData]);
 
   const selectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -283,8 +285,6 @@ const Admin = (
       );
     }
   };
-
-  console.log(allNamesData);
 
   return (
     <>
