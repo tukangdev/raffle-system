@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import firebase from "../../../lib/firebase";
 import { ResponseData } from "../../../types";
+import Admin from "../../admin";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const namesRef = firebase.firestore.collection("names");
@@ -161,7 +162,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const batch = firebase.firestore.batch();
 
       names.forEach((name: string) => {
-        batch.set(namesRef.doc(), { name });
+        batch.set(namesRef.doc(), {
+          name,
+          isWinner: false,
+          createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+        });
       });
 
       await batch.commit();
@@ -178,6 +184,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       try {
         const result = await namesRef.add({
           name,
+          isWinner: false,
+          createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
         });
 
         const doc = await namesRef.doc(result.id).get();

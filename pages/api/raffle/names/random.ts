@@ -5,7 +5,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "GET") {
     try {
       const namesRef = firebase.firestore.collection("names");
-      const snapshot = await namesRef.get();
+      const snapshot = await namesRef.where("isWinner", "==", false).get();
       let allNames: FirebaseFirestore.DocumentData[] = [];
       snapshot.forEach((doc) => allNames.push({ ...doc.data(), id: doc.id }));
 

@@ -1,13 +1,55 @@
 import React from "react";
 import Head from "next/head";
-import { fetchData, useConfig, useNames, useRandomName } from "../queries";
+import {
+  fetchData,
+  getRandomName,
+  updateWinnerName,
+  useConfig,
+  useNames,
+  useRandomName,
+} from "../queries";
 import Button from "../components/button";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../lib/useWindowResize";
-import axios from "axios";
+import firebaseAdmin from "../lib/firebase";
 import { timeout } from "../lib/helpers";
+import { useQueryCache } from "react-query";
+import { GetServerSidePropsContext } from "next";
+import nookies from "nookies";
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  try {
+    const cookies = nookies.get(ctx);
+    const token = await firebaseAdmin.auth.verifyIdToken(cookies.token);
+    const { uid, email } = token;
+
+    // the user is authenticated!
+    // FETCH STUFF HERE
+
+    return {
+      props: { message: `Your email is ${email} and your UID is ${uid}.` },
+    };
+  } catch (err) {
+    // either the `token` cookie didn't exist
+    // or token verification failed
+    // either way: redirect to the login page
+    // either the `token` cookie didn't exist
+    // or token verification failed
+    // either way: redirect to the login page
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/admin/login",
+      },
+      // `as never` is required for correct type inference
+      // by InferGetServerSidePropsType below
+      props: {} as never,
+    };
+  }
+};
 
 export default function Home() {
+  const queryCache = useQueryCache();
   const {
     isFetching: isLoadingConfig,
     isError: isErrorConfig,
@@ -26,43 +68,24 @@ export default function Home() {
     setRandomName,
   ] = React.useState<FirebaseFirestore.DocumentData>();
 
-  React.useEffect(() => {
-    getRandomName();
-  }, [isShuffle]);
+  React.useEffect(() => {}, [randomName, isSelectCard]);
 
-  const startInterval = async () => {
-    setIsShuffle(true);
-    await timeout(configData?.data.shuffleInterval || 3000);
-    setIsSelectCard(true);
-    await timeout(1000);
-    setFlipCard(true);
-    await timeout(configData?.data.cardRevealInterval || 3000);
-    setFlipCard(false);
-    await timeout(1000);
-    setIsSelectCard(false);
-    randomName && (await removeSelectedName(randomName));
-    await timeout(1000);
-    setIsShuffle(false);
-  };
-
-  const getRandomName = async () => {
-    const nameData = await fetchData<FirebaseFirestore.DocumentData>(
-      "GET",
-      "/api/raffle/names/random"
-    );
-    if (nameData.data) {
-      setRandomName(nameData);
-    }
-  };
-
-  const removeSelectedName = async (r: FirebaseFirestore.DocumentData) => {
-    if (r) {
-      await fetchData<FirebaseFirestore.DocumentData>(
-        "DELETE",
-        `/api/raffle/names/${r.data.id}`
-      );
-    }
-  };
+  const startInterval = () =>
+    new Promise(async (resolve) => {
+      setIsShuffle(true);
+      await timeout(configData?.data.shuffleInterval || 3000);
+      setIsSelectCard(true);
+      await timeout(1000);
+      setFlipCard(true);
+      await timeout(configData?.data.cardRevealInterval || 3000);
+      setFlipCard(false);
+      await timeout(1000);
+      setIsSelectCard(false);
+      // randomName && (await updateWinnerName(randomName));
+      await timeout(1000);
+      setIsShuffle(false);
+      resolve();
+    });
 
   const getCardBackgroundColors = () => {
     switch (configData?.data.gradient) {
@@ -107,10 +130,15 @@ export default function Home() {
                   cursorInArea ? "opacity-100" : "opacity-0"
                 } hover:scale-110`}
                 onClick={async () => {
+                  const randomNameData = await getRandomName();
+                  setRandomName(randomNameData);
                   await startInterval();
+                  randomNameData && (await updateWinnerName(randomNameData));
+                  queryCache.invalidateQueries("names");
+                  queryCache.invalidateQueries("namesPaginate");
                 }}
               >
-                START RAFFLE
+                PICK A WINNER
               </Button>
             </div>
           )}

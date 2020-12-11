@@ -7,15 +7,12 @@ type ResponseData = {
   status: 0 | 1;
 };
 
-export default async (
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
   const namesCollection = firebase.firestore.collection("names");
   if (req.method === "PUT") {
     try {
-      const { name } = req.body;
+      const { name, isWinner } = req.body;
 
       if (!id) {
         res.status(400);
@@ -25,7 +22,6 @@ export default async (
 
       const namesRef = namesCollection.doc(id as string);
       const doc = await namesRef.get();
-      let message: string = "";
 
       if (!doc.exists) {
         res.status(400);
@@ -34,15 +30,15 @@ export default async (
       }
 
       await firebase.firestore.runTransaction(async (t) => {
-        t.update(namesRef, { name });
+        if (name) {
+          t.update(namesRef, { name });
+        }
+        if (isWinner) {
+          t.update(namesRef, { isWinner });
+        }
       });
 
-      res.status(200);
-      res.json({
-        data: name.data(),
-        status: 1,
-        message,
-      });
+      res.status(200).send({});
     } catch (err) {
       console.error(err);
       res.status(500);

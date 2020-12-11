@@ -13,4 +13,7 @@ export type ResponseData = {
 export type Name = {
   id: string;
   name: string;
+  isWinner: boolean;
+  updatedAt: FirebaseFirestore.FieldValue;
+  createdAt: FirebaseFirestore.FieldValue;
 };

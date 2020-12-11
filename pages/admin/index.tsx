@@ -9,12 +9,15 @@ import PaginationInterface from "../../components/pagination-interface";
 import SearchInput from "../../components/search-input";
 import TextInput from "../../components/text-input";
 import { AlertType, Settings } from "../../enum";
+import { AiOutlineTrophy } from "react-icons/ai";
 import {
+  useAllNames,
   useConfig,
   useConfigUpdate,
   useCreateName,
   useDeleteName,
   useNames,
+  useResetNames,
 } from "../../queries";
 import { Line } from "rc-progress";
 import debounce from "lodash.debounce";
@@ -26,11 +29,11 @@ import firebaseAdmin from "../../lib/firebase";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import nookies from "nookies";
 import RangeSlider from "../../components/range-slider";
+import { Name } from "../../types";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   try {
     const cookies = nookies.get(ctx);
-    console.log(JSON.stringify(cookies, null, 2));
     const token = await firebaseAdmin.auth.verifyIdToken(cookies.token);
     const { uid, email } = token;
 
@@ -71,7 +74,7 @@ const Admin = (
     error,
   } = useConfig();
   const [update, { isLoading: isLoadingConfigUpdate }] = useConfigUpdate();
-
+  const [resetNames] = useResetNames();
   const [page, setPage] = React.useState(1);
   const [anchors, setAnchors] = React.useState<[string, string]>();
   const [perPage, setPerPage] = React.useState<5 | 10 | 30>(5);
@@ -120,6 +123,13 @@ const Admin = (
     search,
   });
 
+  const { data: allNamesData, status: allNamesStatus } = useAllNames();
+
+  const [winnersList, setWinnersList] = React.useState(
+    allNamesData
+      ? allNamesData.data.items.filter(({ isWinner }) => isWinner)
+      : []
+  );
   const isLoading =
     isLoadingCreate || isLoadingRemove || isLoadingNames || isLoadingConfig;
 
@@ -157,7 +167,15 @@ const Admin = (
         }
       }
     }
-  }, [status]);
+  }, [status, allNamesStatus]);
+
+  React.useEffect(() => {
+    if (allNamesData) {
+      setWinnersList(
+        allNamesData.data.items.filter(({ isWinner }) => isWinner)
+      );
+    }
+  }, [allNamesData]);
 
   const selectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -318,7 +336,7 @@ const Admin = (
             }
           >
             <Card wrapperclass="flex flex-row items-center flex-wrap">
-              <div className="hidden lg:flex flex-row items-center flex-grow gap-4 flex-wrap-reverse">
+              <div className="hidden lg:flex flex-row items-center flex-grow gap-4 flex-wrap">
                 <div className="flex flex-row gap-4 lg:flex-shrink">
                   <CheckboxInput
                     checked={Boolean(selectList.length)}
@@ -369,8 +387,110 @@ const Admin = (
                     </a>
                   }
                 />
+                <div className="space-x-4">
+                  <a
+                    onClick={() => {
+                      if (winnersList?.length !== 0) {
+                        return remove(
+                          {
+                            ids: winnersList?.map((user) => user.id) || [],
+                          },
+                          {
+                            onSuccess: () => {
+                              alert(
+                                AlertType.success,
+                                `Successfully deleted ${selectList.length} winners`
+                              );
+                              setWinnersList([]);
+                            },
+                            onError: () => {
+                              alert(
+                                AlertType.error,
+                                `Something went wrong while deleting ${selectList.length} winners`
+                              );
+                              setWinnersList([]);
+                            },
+                          }
+                        );
+                      } else {
+                        return null;
+                      }
+                    }}
+                    className={`lg:w-1/5 lg:text-center ${
+                      winnersList?.length !== 0
+                        ? "text-red-500 hover:text-red-700 cursor-pointer"
+                        : "text-grey-400 cursor-not-allowed"
+                    }`}
+                  >
+                    {resolvedData &&
+                    resolvedData.data.items.filter(({ isWinner }) => isWinner)
+                      .length === 1
+                      ? "Remove winner"
+                      : "Remove winners"}
+                  </a>
+                  <a
+                    onClick={() => {
+                      if (winnersList?.length !== 0) {
+                        return resetNames(
+                          {
+                            ids: winnersList?.map((user) => user.id) || [],
+                          },
+                          {
+                            onSuccess: () => {
+                              alert(
+                                AlertType.success,
+                                `Successfully reset names`
+                              );
+                              setWinnersList([]);
+                            },
+                            onError: () => {
+                              alert(
+                                AlertType.error,
+                                `Something went wrong while resetting names`
+                              );
+                              setWinnersList([]);
+                            },
+                          }
+                        );
+                      } else {
+                        return null;
+                      }
+                    }}
+                    className={`lg:w-1/5 lg:text-center ${
+                      winnersList?.length !== 0
+                        ? "text-red-500 hover:text-red-700 cursor-pointer"
+                        : "text-grey-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Reset names
+                  </a>
+                </div>
               </div>
               <div className="flex lg:hidden flex-col-reverse flex-grow gap-4">
+                <div className="space-x-4">
+                  <a
+                    className={`lg:w-1/5 lg:text-center ${
+                      winnersList?.length !== 0
+                        ? "text-red-500 hover:text-red-700 cursor-pointer"
+                        : "text-grey-400 cursor-not-allowed"
+                    }`}
+                  >
+                    {resolvedData &&
+                    resolvedData.data.items.filter(({ isWinner }) => isWinner)
+                      .length === 1
+                      ? "Remove winner"
+                      : "Remove winners"}
+                  </a>
+                  <a
+                    className={`lg:w-1/5 lg:text-center ${
+                      winnersList?.length !== 0
+                        ? "text-red-500 hover:text-red-700 cursor-pointer"
+                        : "text-grey-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Reset names
+                  </a>
+                </div>
                 <div className="flex flex-row gap-4">
                   <div className="flex flex-row gap-4 lg:flex-shrink">
                     <CheckboxInput onChange={selectAll} />
@@ -435,7 +555,7 @@ const Admin = (
                   {resolvedData ? (
                     resolvedData.data.items.length ? (
                       resolvedData.data.items.map(
-                        ({ name, id }: { name: string; id: string }) => (
+                        ({ name, id, isWinner }: Name) => (
                           <li key={id} className="py-3 px-6 hover:bg-red-100">
                             <CheckboxInput
                               value={id}
@@ -460,7 +580,15 @@ const Admin = (
                               }}
                               wrapperclass="inline-block float-left mr-4"
                             />
-                            {name}
+                            <div className="flex justify-between items-center">
+                              <span>{name}</span>
+
+                              {isWinner && (
+                                <>
+                                  <AiOutlineTrophy className="h-6 w-6 text-orange-400" />
+                                </>
+                              )}
+                            </div>
                           </li>
                         )
                       )
