@@ -46,7 +46,6 @@ export const useNames = (pagination: {
         `/api/raffle/names?q=${search}&go=${go}&firstAnchorId=${anchors[0]}&lastAnchorId=${anchors[1]}&perPage=${perPage}`
       ),
     {
-      refetchOnMount: "always",
       retry: false,
       onSuccess: (response) => {
         if (response && response.data.items) {
@@ -119,7 +118,29 @@ export const useAllNames = () => {
         "/api/raffle/names/all"
       ),
     {
-      refetchOnMount: "always",
+      retry: false,
+      onSuccess: (response) => {
+        if (response && response.data.items) {
+          response.data.items.map(
+            ({ id, name }: { id: string; name: string }) =>
+              queryCache.setQueryData([CACHE_KEYS.names, id], name)
+          );
+        }
+      },
+    }
+  );
+};
+
+export const useWinnerNames = () => {
+  const queryCache = useQueryCache();
+  return useQuery(
+    "",
+    () =>
+      fetchData<{ items: Name[]; total: number }>(
+        "GET",
+        "/api/raffle/names/winners"
+      ),
+    {
       retry: false,
       onSuccess: (response) => {
         if (response && response.data.items) {

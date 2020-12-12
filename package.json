@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "script:add-name-lowercase": "ts-node script/addNameLowerCase.ts",
     "test": "jest",
     "watch": "jest --watch"
   },
@@ -29,7 +30,8 @@
     "react-papaparse": "^3.11.0",
     "react-query": "^2.26.3",
     "react-query-devtools": "^2.6.3",
-    "react-range": "^1.8.3"
+    "react-range": "^1.8.3",
+    "ts-node": "^9.1.1"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^3.0.0",

@@ -18,6 +18,7 @@ import {
   useDeleteName,
   useNames,
   useResetNames,
+  useWinnerNames,
 } from "../../queries";
 import { Line } from "rc-progress";
 import debounce from "lodash.debounce";
@@ -77,7 +78,7 @@ const Admin = (
   const [resetNames] = useResetNames();
   const [page, setPage] = React.useState(1);
   const [anchors, setAnchors] = React.useState<[string, string]>();
-  const [perPage, setPerPage] = React.useState<5 | 10 | 30>(5);
+  const [perPage, setPerPage] = React.useState<5 | 10 | 30>(30);
   const [name, setName] = React.useState("");
   const [alertType, setAlertType] = React.useState<AlertType>(
     AlertType.success
@@ -113,22 +114,21 @@ const Admin = (
 
   const {
     isError,
+    error: namesError,
     resolvedData,
     status,
     isFetching: isLoadingNames,
+    refetch,
   } = useNames({
     go,
     perPage,
     anchors,
     search,
   });
-
-  const { data: allNamesData, status: allNamesStatus } = useAllNames();
+  const { data: winnerNamesData, status: winnerNamesStatus } = useWinnerNames();
 
   const [winnersList, setWinnersList] = React.useState(
-    allNamesData
-      ? allNamesData.data.items.filter(({ isWinner }) => isWinner)
-      : []
+    winnerNamesData ? winnerNamesData.data.items : []
   );
   const isLoading =
     isLoadingCreate || isLoadingRemove || isLoadingNames || isLoadingConfig;
@@ -167,15 +167,13 @@ const Admin = (
         }
       }
     }
-  }, [status, allNamesStatus]);
+  }, [status, winnerNamesStatus]);
 
   React.useEffect(() => {
-    if (allNamesData) {
-      setWinnersList(
-        allNamesData.data.items.filter(({ isWinner }) => isWinner)
-      );
+    if (winnerNamesData) {
+      setWinnersList(winnerNamesData.data.items);
     }
-  }, [allNamesData]);
+  }, [winnerNamesData]);
 
   const selectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -231,6 +229,8 @@ const Admin = (
       }
     );
   };
+
+  console.log(winnersList);
 
   const handleFireBaseUpload = (setting: Settings, file: File | null) => {
     if (!file) {
@@ -510,9 +510,9 @@ const Admin = (
                 <div className="flex gap-4 w-full flex-wrap">
                   <SearchInput
                     search={search}
-                    handleSearch={(v: string) =>
-                      debounce(() => setSearch(v), 1000)
-                    }
+                    handleSearch={(v: string) => {
+                      debounce(() => console.log(v), 3000);
+                    }}
                     wrapperclass="w-full md:w-1/2"
                   />
                   <TextInput
@@ -547,7 +547,8 @@ const Admin = (
             </Card>
             {isError ? (
               <div className="mt-4 px-4 py-2 text-white bg-red-300 rounded ">
-                Something went wrong. Please try reloading the page.
+                Something went wrong. Please try reloading the page. (
+                {JSON.stringify(namesError)})
               </div>
             ) : (
               <Card wrapperclass="mt-4 px-0 py-0">

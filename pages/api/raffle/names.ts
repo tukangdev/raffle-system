@@ -9,21 +9,26 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const { perPage, go, firstAnchorId, lastAnchorId, q } = req.query;
 
+      // await addMissingNameLowerCase();
+
       // all documents
       const docs = q
         ? namesRef
-            .orderBy("name")
+            .orderBy("nameLowercase")
             .startAt(q)
             .endAt(q + "\uf8ff")
-        : namesRef.orderBy("name");
+        : namesRef.orderBy("isWinner", "desc").orderBy("name");
 
       const docsWithLimit = q
         ? namesRef
-            .orderBy("name")
+            .orderBy("nameLowercase")
             .startAt(q)
             .endAt(q + "\uf8ff")
             .limit(parseInt(perPage as string))
-        : namesRef.orderBy("name").limit(parseInt(perPage as string));
+        : namesRef
+            .orderBy("isWinner", "desc")
+            .orderBy("name")
+            .limit(parseInt(perPage as string));
       // snapshot of all documentd
       const snapshot = await docs.get();
 
@@ -171,6 +176,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         array.forEach((name: string) => {
           batch.set(namesRef.doc(), {
             name,
+            nameLowercase: name.toLowerCase(),
             isWinner: false,
             createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
@@ -186,6 +192,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         names.forEach((name: string) => {
           batch.set(namesRef.doc(), {
             name,
+            nameLowercase: name.toLowerCase(),
             isWinner: false,
             createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
@@ -206,6 +213,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         try {
           const result = await namesRef.add({
             name,
+            nameLowercase: name.toLowerCase(),
             isWinner: false,
             createdAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: firebase.admin.firestore.FieldValue.serverTimestamp(),
