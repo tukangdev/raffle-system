@@ -9,26 +9,54 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const { perPage, go, firstAnchorId, lastAnchorId, q } = req.query;
 
-      // await addMissingNameLowerCase();
+      const hasUpperCase = (queryText: string) => {
+        let i = 0;
+        let character = "";
+        while (i <= queryText.length) {
+          character = queryText.charAt(i);
 
-      // all documents
-      const docs = q
-        ? namesRef
-            .orderBy("nameLowercase")
-            .startAt(q)
-            .endAt(q + "\uf8ff")
-        : namesRef.orderBy("isWinner", "desc").orderBy("name");
+          if (character == character.toUpperCase()) {
+            return true;
+          }
+          if (character == character.toLowerCase()) {
+            i++;
+          }
 
-      const docsWithLimit = q
-        ? namesRef
-            .orderBy("nameLowercase")
-            .startAt(q)
-            .endAt(q + "\uf8ff")
-            .limit(parseInt(perPage as string))
-        : namesRef
-            .orderBy("isWinner", "desc")
-            .orderBy("name")
-            .limit(parseInt(perPage as string));
+          if (i === queryText.length) {
+            return false;
+          }
+        }
+      };
+      const docs =
+        q && !hasUpperCase(q as string)
+          ? namesRef
+              .orderBy("nameLowercase")
+              .startAt(q)
+              .endAt(q + "\uf8ff")
+          : q && hasUpperCase(q as string)
+          ? namesRef
+              .orderBy("name")
+              .startAt(q)
+              .endAt(q + "\uf8ff")
+          : namesRef.orderBy("isWinner", "desc").orderBy("name");
+
+      const docsWithLimit =
+        q && !hasUpperCase(q as string)
+          ? namesRef
+              .orderBy("nameLowercase")
+              .startAt(q)
+              .endAt(q + "\uf8ff")
+              .limit(parseInt(perPage as string))
+          : q && hasUpperCase(q as string)
+          ? namesRef
+              .orderBy("name")
+              .startAt(q)
+              .endAt(q + "\uf8ff")
+              .limit(parseInt(perPage as string))
+          : namesRef
+              .orderBy("isWinner", "desc")
+              .orderBy("name")
+              .limit(parseInt(perPage as string));
       // snapshot of all documentd
       const snapshot = await docs.get();
 
