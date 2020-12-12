@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/raffle/names.ts": {
-      "maxDuration": 60
-    }
-  }
-}
