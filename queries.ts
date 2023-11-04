@@ -118,6 +118,26 @@ export const useAllNames = () => {
 	)
 }
 
+export const useClearNames = (pagination: {
+	go?: 'next' | 'prev' | 'start' | 'last'
+	perPage: 5 | 10 | 30
+	anchors?: [string, string]
+	search: string
+}) => {
+	const queryClient = useQueryClient()
+
+	return useMutation(() => fetchData('DELETE', `/api/raffle/names/clear`), {
+		onSuccess: () => {
+			queryClient.invalidateQueries(
+				CACHE_KEYS.namesPaginate,
+				{},
+				{ cancelRefetch: true },
+			)
+			queryClient.invalidateQueries(CACHE_KEYS.names)
+		},
+	})
+}
+
 export const useWinnerNames = () => {
 	const queryClient = useQueryClient()
 	return useQuery(

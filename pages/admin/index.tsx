@@ -12,6 +12,7 @@ import { AlertType, Settings } from '../../enum'
 import { AiOutlineTrophy } from 'react-icons/ai'
 import {
 	useAllNames,
+	useClearNames,
 	useConfig,
 	useConfigUpdate,
 	useCreateName,
@@ -76,6 +77,7 @@ const Admin = (
 	} = useConfig()
 	const { isLoading: isLoadingConfigUpdate, mutate: update } = useConfigUpdate()
 	const { mutate: resetNames } = useResetNames()
+
 	const [page, setPage] = React.useState(1)
 	const [anchors, setAnchors] = React.useState<[string, string]>()
 	const [perPage, setPerPage] = React.useState<5 | 10 | 30>(30)
@@ -109,6 +111,13 @@ const Admin = (
 	const [cardLogoUploadProgress, setCardLogoUploadProgress] = React.useState(0)
 	const cardLogoUploadRef = React.useRef<HTMLInputElement>(null)
 	const bgImageUploadRef = React.useRef<HTMLInputElement>(null)
+
+	const { mutate: clearNames } = useClearNames({
+		go,
+		perPage,
+		anchors,
+		search,
+	})
 
 	const {
 		isError,
@@ -460,6 +469,35 @@ const Admin = (
 										}`}
 									>
 										Reset names
+									</a>
+									<a
+										className={`lg:w-1/5 lg:text-center font-bold text-red-800 cursor-pointer hover:text-red-900`}
+										onClick={() => {
+											if (
+												confirm(
+													'Are you sure you want to clear all names? This action is irreversible.',
+												)
+											) {
+												clearNames(undefined, {
+													onSuccess: () => {
+														alert(
+															AlertType.success,
+															`Successfully deleted all names`,
+														)
+														setWinnersList([])
+													},
+													onError: () => {
+														alert(
+															AlertType.error,
+															`Something went wrong while deleting all names`,
+														)
+														setWinnersList([])
+													},
+												})
+											}
+										}}
+									>
+										Clear all names
 									</a>
 								</div>
 							</div>
