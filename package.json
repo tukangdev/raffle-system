@@ -3,9 +3,9 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev --openssl-legacy-provider",
-		"build": "next build --openssl-legacy-provider",
-		"start": "next start --openssl-legacy-provider",
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
 		"script:add-name-lowercase": "ts-node script/addNameLowerCase.ts",
 		"test": "jest",
 		"watch": "jest --watch"
