@@ -4,6 +4,7 @@ import '../styles/globals.css'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Hydrate } from 'react-query/hydration'
+import { Analytics } from '@vercel/analytics/react'
 
 const queryClient = new QueryClient()
 
@@ -16,6 +17,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 				</Hydrate>
 				<ReactQueryDevtools initialIsOpen />
 			</QueryClientProvider>
+			<Analytics />
 		</>
 	)
 }
