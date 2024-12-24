@@ -1,3 +1,5 @@
+import { Name } from '../types'
+
 const isServer = typeof window === 'undefined'
 
 interface StorageItem {
@@ -29,15 +31,47 @@ const defaultConfig: Config = {
 	cardRevealInterval: 3000,
 }
 
-const defaultNames: string[] = [
-	'John Doe',
-	'Jane Smith',
-	'Alice Johnson',
-	'Bob Brown',
-	'Charlie Davis',
-	'Diana White',
-	'Ethan Green',
-	'Fiona Black',
+const defaultNames: StorageItem[] = [
+	{
+		id: '1',
+		name: 'John Doe',
+		nameLowercase: 'john doe',
+		isWinner: false,
+		createdAt: Date.now(),
+		updatedAt: Date.now(),
+	},
+	{
+		id: '2',
+		name: 'Jane Smith',
+		nameLowercase: 'jane smith',
+		isWinner: false,
+		createdAt: Date.now(),
+		updatedAt: Date.now(),
+	},
+	{
+		id: '3',
+		name: 'Alice Johnson',
+		nameLowercase: 'alice johnson',
+		isWinner: false,
+		createdAt: Date.now(),
+		updatedAt: Date.now(),
+	},
+	{
+		id: '4',
+		name: 'Bob Brown',
+		nameLowercase: 'bob brown',
+		isWinner: false,
+		createdAt: Date.now(),
+		updatedAt: Date.now(),
+	},
+	{
+		id: '5',
+		name: 'Charlie Davis',
+		nameLowercase: 'charlie davis',
+		isWinner: false,
+		createdAt: Date.now(),
+		updatedAt: Date.now(),
+	},
 ]
 
 class LocalStorageService {
