@@ -23,6 +23,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 			props: { message: `Your email is ${email} and your UID is ${uid}.` },
 		}
 	} catch (err) {
+		console.error('Error in getServerSideProps - /: ', err)
 		// either the `token` cookie didn't exist
 		// or token verification failed
 		// either way: redirect to the login page
