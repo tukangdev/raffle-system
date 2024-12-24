@@ -3,7 +3,7 @@ import '../styles/globals.css'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Hydrate } from 'react-query/hydration'
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from '@vercel/analytics/next'
 import { AppProps } from 'next/dist/shared/lib/router/router'
 
 const queryClient = new QueryClient()
